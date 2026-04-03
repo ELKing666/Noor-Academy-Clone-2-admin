@@ -28,4 +28,3 @@ timeoutMs = 20000
 [userenv]
 
 [userenv.shared]
-GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCeDziEvarOdoDRZhxDa392G7IwkiX0dgmhZO_PqvUz0doEGpI2xjIke4lSVErFx3huw/exec"
