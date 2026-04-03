@@ -223,7 +223,7 @@ function About() {
 
 
 interface CourseCard {
-  slug?: string;
+  slug: string;
   icon: string;
   title: string;
   price: string;
@@ -265,6 +265,7 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
         featured: true,
       },
       {
+        slug: "bac",
         icon: "🧠",
         title: "مهارات الدراسة",
         price: "3,500 د.ج / شهر",
@@ -282,6 +283,7 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
     label: "دورات الصغار 🧒",
     courses: [
       {
+        slug: "robotics",
         icon: "🤖",
         title: "روبوتيك المبتدئين",
         price: "3,500 د.ج / شهر",
@@ -308,6 +310,7 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
         featured: true,
       },
       {
+        slug: "robotics",
         icon: "💡",
         title: "روبوتيك متقدم",
         price: "6,000 د.ج / شهر",
@@ -438,14 +441,12 @@ function CoursesGrid() {
                   </a>
 
                   {/* Learn more link */}
-                  {course.slug && (
-                    <Link
-                      href={`/courses/${course.slug}`}
-                      className="block text-center text-primary text-xs font-semibold mt-3 hover:underline"
-                    >
-                      تعرف على المزيد ←
-                    </Link>
-                  )}
+                  <Link
+                    href={`/courses/${course.slug}`}
+                    className="block text-center text-primary text-xs font-semibold mt-3 hover:underline"
+                  >
+                    تعرف على المزيد ←
+                  </Link>
                 </div>
               </div>
             ))}
