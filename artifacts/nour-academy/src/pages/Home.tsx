@@ -373,32 +373,6 @@ function CurriculumSection() {
     { value: "8–18 سنة", label: "الفئة العمرية" },
   ];
 
-  const topics = [
-    {
-      num: "01",
-      title: "الرياضيات والفيزياء",
-      desc: "إتقان قوانين الرياضيات والفيزياء لتحضير البكالوريا، مع حل مسائل تطبيقية واختبارات تجريبية لقياس المستوى وتعزيز الفهم.",
-      tags: ["الحساب والجبر", "الفيزياء التطبيقية", "تمارين البكالوريا"],
-    },
-    {
-      num: "02",
-      title: "اللغة الإنجليزية",
-      desc: "تعلم الإنجليزية بأسلوب عصري يجمع بين المحادثة والكتابة والقراءة، مع تمارين يومية ومحاكاة مواقف حقيقية لاكتساب الطلاقة.",
-      tags: ["محادثة يومية", "الكتابة الأكاديمية", "القراءة المعمّقة"],
-    },
-    {
-      num: "03",
-      title: "الروبوتيك والبرمجة",
-      desc: "جلسات عملية مبتكرة للأطفال لبناء الروبوتات وتعلم مبادئ البرمجة، تنمّي الإبداع والتفكير المنطقي والحل الإبداعي للمشكلات.",
-      tags: ["تجميع الروبوتات", "Scratch / Python", "مشاريع عملية"],
-    },
-    {
-      num: "04",
-      title: "مهارات التعلم والمذاكرة",
-      desc: "تقنيات علمية لتحسين التركيز والاستيعاب وتنظيم وقت المذاكرة، مع أساليب للتخلص من التوتر وبناء ثقة الطالب بنفسه.",
-      tags: ["إدارة الوقت", "تقنيات الحفظ", "التركيز العميق"],
-    },
-  ];
 
   return (
     <section id="curriculum" className="bg-slate-50">
@@ -444,54 +418,6 @@ function CurriculumSection() {
         </div>
       </div>
 
-      {/* Curriculum content */}
-      <div className="container mx-auto px-4 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">ماذا ستتعلم؟</h3>
-          <p className="text-muted-foreground">تقنيات علمية مُثبتة لتحرير الطاقة الكاملة لعقلك</p>
-        </motion.div>
-
-        <div className="space-y-4">
-          {topics.map((topic, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
-            >
-              <div className="flex flex-col md:flex-row">
-                {/* Number + Title side */}
-                <div className="bg-primary/5 md:w-64 flex-shrink-0 px-8 py-6 flex flex-col justify-center border-b md:border-b-0 md:border-l border-primary/10">
-                  <span className="text-4xl font-black text-primary/20 leading-none mb-1">{topic.num}</span>
-                  <h4 className="text-lg font-bold text-primary">{topic.title}</h4>
-                </div>
-                {/* Description side */}
-                <div className="px-8 py-6 flex-1">
-                  <p className="text-muted-foreground mb-4 leading-relaxed">{topic.desc}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {topic.tags.map((tag, j) => (
-                      <span
-                        key={j}
-                        className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }
