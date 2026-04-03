@@ -923,7 +923,7 @@ function Contact() {
     {
       icon: <MapPin size={26} className="text-white" />,
       title: "العنوان",
-      info: "حي 500 مسكن، المسيلة، الجزائر",
+      info: "حي 500 مسكن، شلف، الجزائر",
       dir: undefined,
       gradient: "from-emerald-500 to-emerald-700",
       glow: "hover:shadow-emerald-400/30",
@@ -993,7 +993,7 @@ function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-6 text-amber-400">اتصل بنا</h3>
             <ul className="space-y-3 text-white/80">
-              <li className="flex items-center gap-2"><MapPin size={18} className="text-amber-400" /> المسيلة، الجزائر</li>
+              <li className="flex items-center gap-2"><MapPin size={18} className="text-amber-400" /> شلف، الجزائر</li>
               <li className="flex items-center gap-2"><Phone size={18} className="text-amber-400" /> <span dir="ltr">0555 12 34 56</span></li>
               <li className="flex items-center gap-2"><Mail size={18} className="text-amber-400" /> contact@nour-academy.dz</li>
             </ul>
