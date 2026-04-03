@@ -1,0 +1,155 @@
+Build a full-stack Arabic educational academy website called "نور أكاديمي" (Nour Akademi).
+
+---
+
+## TECH STACK
+- Frontend: React + TypeScript + Vite
+- Styling: Tailwind CSS + shadcn/ui components
+- Routing: React Router v6
+- Backend: Express.js (port 5000, serves both API and frontend)
+- Database: PostgreSQL with Drizzle ORM
+- Language/Direction: Arabic, RTL layout
+
+---
+
+## COLOR THEME
+- Primary color: Deep red (#c0001a or similar)
+- Secondary color: Golden yellow (#f5a623 or similar)
+- The navbar and hero background use primary red
+- Cards use neutral white/light backgrounds
+
+---
+
+## PAGE STRUCTURE (single page, all sections on `/`)
+
+### 1. NAVBAR (fixed, transparent → red with blur on scroll)
+- Logo: image + text "نور أكاديمي" with "أكاديمي" in golden color
+- Nav links (right to left): الرئيسية، من نحن، الدورات، آراء الطلاب، الأسئلة الشائعة، تواصل معنا، التسجيل
+- Desktop: horizontal nav links + "سجّل الآن" CTA button (golden)
+- Mobile: hamburger menu that opens a full dropdown
+- All links are anchor links to section IDs on the page
+
+### 2. HERO SECTION (id="hero")
+- Full-width background image (classroom photo) with a red overlay at 85% opacity
+- Centered text:
+  - H1: "أنر درب نجاحك مع نور أكاديمي" — "نور أكاديمي" in golden color
+  - Subtitle: "بيئة تعليمية حديثة، نخبة من خيرة الأساتذة، ومتابعة بيداغوجية دقيقة لضمان تفوق أبنائكم في مسارهم الدراسي."
+  - CTA button: "سجّل الآن" linking to #registration
+- Fade-up animation on heading, subtitle, and button
+
+### 3. ABOUT SECTION (id="about")
+- Heading: "من نحن"
+- Description paragraph about the academy's mission
+- 4 stats cards in a 2x2 grid (mobile) / 4-column (desktop):
+  - Users icon: "+500 طالب وطالبة"
+  - GraduationCap icon: "%95 نسبة النجاح"
+  - Award icon: "+10 سنوات خبرة"
+  - Target icon: "+20 دورة تدريبية"
+- Team section with heading "فريقنا التعليمي":
+  - 4 teacher cards each with: avatar photo, name, and role
+  - أ. كريمة بن عمر — مديرة الأكاديمية / أستاذة رياضيات
+  - أ. يوسف حداد — أستاذ فيزياء وعلوم / تحضير بكالوريا
+  - أ. سارة مزياني — أستاذة لغة إنجليزية / جميع المستويات
+  - م. أمين بلقاسم — مدرب روبوتيك وبرمجة للأطفال
+
+### 4. COURSES SECTION (id="courses")
+- Heading: "دوراتنا التعليمية"
+- 3 course cards in a grid:
+  1. تحضير البكالوريا — رياضيات، فيزياء، علوم في شعبتَي العلوم والرياضيات — 6,000 د.ج / شهرياً
+  2. اللغة الإنجليزية — من المستوى المبتدئ إلى المتقدم، محادثة وكتابة — 4,500 د.ج / شهرياً
+  3. الروبوتيك للأطفال — تعلم البرمجة والروبوتيك للأعمار 8-14 سنة — 5,000 د.ج / شهرياً
+- Each card: icon, title, description, price badge
+
+### 5. TESTIMONIALS SECTION (id="testimonials")
+- Heading: "آراء الطلاب وأولياء الأمور"
+- 3 testimonial cards with: avatar, name, role, star rating (5 stars), and quote text
+- Quotes from parents/students about their experience
+
+### 6. FAQ SECTION (id="faq")
+- Heading: "الأسئلة الشائعة"
+- Accordion with 5 Q&A items about enrollment, scheduling, age requirements, payment, and results
+
+### 7. REGISTRATION FORM (id="registration")
+- Heading: "نموذج التسجيل"
+- Subtitle: "سجّل الآن واحجز مقعدك"
+- Fields:
+  - Text input: الاسم الكامل (data-testid="input-name")
+  - Tel input: رقم الهاتف (data-testid="input-phone"), dir="ltr"
+  - Select dropdown: الدورة المطلوبة (data-testid="select-course")
+    - Options: تحضير البكالوريا (value="bac"), اللغة الإنجليزية (value="english"), الروبوتيك للأطفال (value="robotics")
+  - Radio group: طريقة الدفع — نقداً (value="cash"), CCP (value="ccp")
+  - Submit button: "إرسال التسجيل" (shows "جارٍ الإرسال..." while loading)
+- On submit: POST to /api/register with { name, phone, course, payment_method }
+- On success: replace form with a success card showing:
+  - Green CheckCircle icon
+  - "تم التسجيل بنجاح!" heading
+  - "شكراً لك! تم حفظ بياناتك بنجاح. سنتواصل معك قريباً." message
+  - "تسجيل طالب آخر" button to reset
+
+### 8. CONTACT SECTION (id="contact")
+- Heading: "تواصل معنا"
+- Contact info: phone, email, address
+- Phone: 0555 12 34 56
+- Email: contact@noor-academy.dz
+- Address: حي 500 مسكن، المسيلة، الجزائر
+
+### 9. FOOTER
+- Background: primary red
+- Logo + tagline
+- Quick links column
+- Contact info column (phone, email, address icons)
+- Copyright: © 2026 نور أكاديمي — جميع الحقوق محفوظة
+
+### 10. WHATSAPP FLOATING BUTTON
+- Fixed bottom-left green circular button
+- Links to WhatsApp: https://wa.me/213555123456
+
+---
+
+## DATABASE
+PostgreSQL table `students`:
+- id SERIAL PRIMARY KEY
+- name VARCHAR(255)
+- phone VARCHAR(50)
+- course VARCHAR(255)
+- payment_method VARCHAR(100)
+- status VARCHAR(50) DEFAULT 'pending'
+- created_at TIMESTAMP DEFAULT NOW()
+
+---
+
+## BACKEND API ENDPOINTS
+
+### POST /api/register
+- Validates body with Zod: { name, phone, course, payment_method }
+- Inserts student into PostgreSQL
+- Fire-and-forget: sends form data (application/x-www-form-urlencoded) to a Google Apps Script URL as: name, phone, course, payment, payment_method
+- Returns: { success: true, student: { ...fields } }
+- Does NOT block on Google Sheets — log errors but always return 201 if DB insert succeeded
+
+### GET /api/students
+- Returns all students ordered by created_at
+
+### GET /api/export
+- Fetches all students
+- Returns a downloadable CSV file named students_YYYY-MM-DD.csv
+- CSV columns: ID, الاسم, الهاتف, الدورة, طريقة الدفع, الحالة, تاريخ التسجيل
+- Use withBOM: true so Arabic displays correctly in Excel
+
+### GET /health
+- Returns: { status: "ok" }
+
+---
+
+## SERVER SETUP (server/index.ts)
+- Express on port process.env.PORT || 5000, bound to 0.0.0.0
+- In development: use Vite as middleware (middlewareMode: true, hmr shared with httpServer, allowedHosts: true)
+- In production (NODE_ENV=production): serve static dist/ folder, catch-all serves index.html using app.use() not app.get("*")
+- Use createServer from "http" and share with Vite HMR so only ONE port is ever open
+
+---
+
+## DEPLOYMENT
+- Build: npm run build (Vite builds frontend to dist/)
+- Run: NODE_ENV=production npx tsx server/index.ts
+- Target: autoscale
