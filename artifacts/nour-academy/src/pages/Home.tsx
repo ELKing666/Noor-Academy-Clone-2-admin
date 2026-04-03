@@ -117,9 +117,16 @@ function Navbar() {
       }`}
     >
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        <a href="#hero" className="text-2xl font-bold font-sans">
-          <span className="text-white">نور</span>{" "}
-          <span className="text-amber-400">أكاديمي</span>
+        <a href="#hero" className="flex items-center gap-3">
+          <img
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt="نور أكاديمي"
+            className="h-12 w-12 rounded-lg object-cover"
+          />
+          <span className="text-2xl font-bold font-sans">
+            <span className="text-white">نور</span>{" "}
+            <span className="text-amber-400">أكاديمي</span>
+          </span>
         </a>
 
         {/* Desktop Nav */}
