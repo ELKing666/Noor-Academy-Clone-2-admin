@@ -277,6 +277,222 @@ function Courses() {
   );
 }
 
+function CoursesGrid() {
+  const courses = [
+    {
+      img: `${import.meta.env.BASE_URL}course-bac.png`,
+      title: "تحضير البكالوريا",
+      desc: "منهج شامل في الرياضيات والفيزياء والعلوم لشعبتَي العلوم والتقني رياضي، مع متابعة فردية دقيقة.",
+      price: "6,000 د.ج / شهرياً",
+    },
+    {
+      img: `${import.meta.env.BASE_URL}course-english.png`,
+      title: "اللغة الإنجليزية",
+      desc: "دورات من المستوى المبتدئ إلى المتقدم في المحادثة والكتابة والقراءة، مع مدرسين متخصصين.",
+      price: "4,500 د.ج / شهرياً",
+    },
+    {
+      img: `${import.meta.env.BASE_URL}course-robotics.png`,
+      title: "الروبوتيك للأطفال",
+      desc: "تعلم البرمجة والروبوتيك للأعمار 8-14 سنة بأسلوب تفاعلي ممتع يطوّر التفكير المنطقي والإبداعي.",
+      price: "5,000 د.ج / شهرياً",
+    },
+  ];
+
+  return (
+    <section id="courses-grid" className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <span className="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+            برامجنا الدراسية
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            اكتشف دوراتنا
+          </h2>
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            برامج تعليمية مصممة بعناية لتلبية احتياجات كل طالب، بإشراف نخبة من الأساتذة المتخصصين.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {courses.map((course, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.15 }}
+              viewport={{ once: true }}
+            >
+              <Card className="overflow-hidden group hover:shadow-2xl transition-shadow duration-300 border-none shadow-md h-full flex flex-col">
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={course.img}
+                    alt={course.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                </div>
+                <CardContent className="pt-6 px-6 pb-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{course.title}</h3>
+                  <p className="text-muted-foreground text-sm mb-4 flex-1">{course.desc}</p>
+                  <div className="flex items-center justify-between mt-auto">
+                    <span className="text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
+                      {course.price}
+                    </span>
+                    <a
+                      href="#registration"
+                      className="text-primary font-semibold text-sm hover:underline flex items-center gap-1"
+                    >
+                      تعرف على المزيد ←
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CurriculumSection() {
+  const stats = [
+    { value: "تدريب تفاعلي", label: "منهجية التعلم" },
+    { value: "3 مواد رئيسية", label: "مواد البرنامج" },
+    { value: "6 ساعة/أسبوع", label: "تدريب مكثف" },
+    { value: "8–18 سنة", label: "الفئة العمرية" },
+  ];
+
+  const topics = [
+    {
+      num: "01",
+      title: "الرياضيات والفيزياء",
+      desc: "إتقان قوانين الرياضيات والفيزياء لتحضير البكالوريا، مع حل مسائل تطبيقية واختبارات تجريبية لقياس المستوى وتعزيز الفهم.",
+      tags: ["الحساب والجبر", "الفيزياء التطبيقية", "تمارين البكالوريا"],
+    },
+    {
+      num: "02",
+      title: "اللغة الإنجليزية",
+      desc: "تعلم الإنجليزية بأسلوب عصري يجمع بين المحادثة والكتابة والقراءة، مع تمارين يومية ومحاكاة مواقف حقيقية لاكتساب الطلاقة.",
+      tags: ["محادثة يومية", "الكتابة الأكاديمية", "القراءة المعمّقة"],
+    },
+    {
+      num: "03",
+      title: "الروبوتيك والبرمجة",
+      desc: "جلسات عملية مبتكرة للأطفال لبناء الروبوتات وتعلم مبادئ البرمجة، تنمّي الإبداع والتفكير المنطقي والحل الإبداعي للمشكلات.",
+      tags: ["تجميع الروبوتات", "Scratch / Python", "مشاريع عملية"],
+    },
+    {
+      num: "04",
+      title: "مهارات التعلم والمذاكرة",
+      desc: "تقنيات علمية لتحسين التركيز والاستيعاب وتنظيم وقت المذاكرة، مع أساليب للتخلص من التوتر وبناء ثقة الطالب بنفسه.",
+      tags: ["إدارة الوقت", "تقنيات الحفظ", "التركيز العميق"],
+    },
+  ];
+
+  return (
+    <section id="curriculum" className="bg-slate-50">
+      {/* Red header banner */}
+      <div className="bg-primary py-16 px-4">
+        <div className="container mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <span className="inline-block bg-white/20 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
+              تعليم وتقنية
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              برنامجنا الدراسي
+            </h2>
+            <p className="text-white/80 max-w-2xl mx-auto text-lg">
+              منهج تعليمي متكامل يجمع بين الأكاديمية والتطبيق العملي، مصمم لتحقيق أعلى مستويات التفوق لأبنائكم.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Stats cards — overlapping the white area below */}
+        <div className="container mx-auto mt-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {stats.map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className="bg-white rounded-xl px-5 py-5 text-center shadow-lg border border-slate-100">
+                  <div className="text-lg md:text-xl font-bold text-primary mb-1">{stat.value}</div>
+                  <div className="text-xs text-muted-foreground">{stat.label}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Curriculum content */}
+      <div className="container mx-auto px-4 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">ماذا ستتعلم؟</h3>
+          <p className="text-muted-foreground">تقنيات علمية مُثبتة لتحرير الطاقة الكاملة لعقلك</p>
+        </motion.div>
+
+        <div className="space-y-4">
+          {topics.map((topic, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+            >
+              <div className="flex flex-col md:flex-row">
+                {/* Number + Title side */}
+                <div className="bg-primary/5 md:w-64 flex-shrink-0 px-8 py-6 flex flex-col justify-center border-b md:border-b-0 md:border-l border-primary/10">
+                  <span className="text-4xl font-black text-primary/20 leading-none mb-1">{topic.num}</span>
+                  <h4 className="text-lg font-bold text-primary">{topic.title}</h4>
+                </div>
+                {/* Description side */}
+                <div className="px-8 py-6 flex-1">
+                  <p className="text-muted-foreground mb-4 leading-relaxed">{topic.desc}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {topic.tags.map((tag, j) => (
+                      <span
+                        key={j}
+                        className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Testimonials() {
   return (
     <section id="testimonials" className="py-20 bg-white">
@@ -599,6 +815,8 @@ export default function Home() {
       <Hero />
       <About />
       <Courses />
+      <CoursesGrid />
+      <CurriculumSection />
       <Testimonials />
       <FAQ />
       <Registration />

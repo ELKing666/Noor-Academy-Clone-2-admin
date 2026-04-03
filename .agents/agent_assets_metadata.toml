@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "_cj4XJ7rQkq80JeIyRnoG"
+uri = "file://artifacts/nour-academy/public/course-bac.png"
+type = "image"
+title = "bac prep classroom students Algeria"
+
+[[generated]]
+id = "VYK1R2pZjrh1pPEKDlodC"
+uri = "file://artifacts/nour-academy/public/course-english.png"
+type = "image"
+title = "English language learning classroom"
+
+[[generated]]
+id = "zxB8-8S4kGI9liP4_i_-L"
+uri = "file://artifacts/nour-academy/public/course-robotics.png"
+type = "image"
+title = "kids robotics coding STEM lab"
