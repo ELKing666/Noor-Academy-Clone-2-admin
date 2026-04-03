@@ -206,16 +206,19 @@ export default function CoursePage() {
       {/* Hero */}
       <header
         className="relative text-white py-28 px-4 text-center overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #8b0012 0%, #c0001a 100%)" }}
+        style={{ background: "linear-gradient(135deg, #6b0010 0%, #a0001a 100%)" }}
       >
         <div
-          className="absolute inset-0 opacity-10"
+          className="absolute inset-0"
           style={{
             backgroundImage: `url("${imgSrc}")`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            opacity: 0.18,
           }}
         />
+        {/* Strong overlay for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <motion.span
             initial={{ opacity: 0, y: -10 }}
