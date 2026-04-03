@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -222,40 +222,115 @@ function About() {
 }
 
 
+interface CourseCard {
+  slug?: string;
+  icon: string;
+  title: string;
+  price: string;
+  features: string[];
+  featured?: boolean;
+}
+
+const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
+  {
+    id: "adults",
+    label: "دورات الكبار 👨",
+    courses: [
+      {
+        slug: "bac",
+        icon: "📚",
+        title: "تحضير البكالوريا",
+        price: "6,000 د.ج / شهر",
+        features: [
+          "رياضيات وفيزياء وعلوم",
+          "متابعة فردية دقيقة",
+          "اختبارات تجريبية دورية",
+          "تطبيق عملي 100%",
+        ],
+      },
+      {
+        slug: "english",
+        icon: "🌍",
+        title: "اللغة الإنجليزية",
+        price: "4,500 د.ج / شهر",
+        features: [
+          "محادثة وكتابة وقراءة",
+          "مستويات متعددة",
+          "مدرسون متخصصون",
+          "تمارين يومية تفاعلية",
+        ],
+        featured: true,
+      },
+      {
+        icon: "🧠",
+        title: "مهارات الدراسة",
+        price: "3,500 د.ج / شهر",
+        features: [
+          "تقنيات الحفظ السريع",
+          "إدارة الوقت والتركيز",
+          "تنظيم المذاكرة",
+          "بناء الثقة بالنفس",
+        ],
+      },
+    ],
+  },
+  {
+    id: "kids",
+    label: "دورات الصغار 🧒",
+    courses: [
+      {
+        icon: "🎨",
+        title: "الرسم الإبداعي",
+        price: "3,000 د.ج / شهر",
+        features: [
+          "فنون بصرية للأطفال",
+          "تنمية الإبداع",
+          "مشاريع فنية أسبوعية",
+          "للأعمار 6-12 سنة",
+        ],
+      },
+      {
+        slug: "robotics",
+        icon: "🤖",
+        title: "الروبوتيك للأطفال",
+        price: "5,000 د.ج / شهر",
+        features: [
+          "برمجة وتجميع روبوتات",
+          "Scratch والبرمجة المرئية",
+          "مشاريع عملية كل وحدة",
+          "للأعمار 8-14 سنة",
+        ],
+        featured: true,
+      },
+      {
+        icon: "🔢",
+        title: "رياضيات تفاعلية",
+        price: "3,000 د.ج / شهر",
+        features: [
+          "حساب ذهني سريع",
+          "ألعاب رياضية تعليمية",
+          "تقوية الأساس الدراسي",
+          "للأعمار 7-13 سنة",
+        ],
+      },
+    ],
+  },
+];
+
 function CoursesGrid() {
-  const courses = [
-    {
-      slug: "bac",
-      img: `${import.meta.env.BASE_URL}course-bac.jpg`,
-      title: "تحضير البكالوريا",
-      desc: "منهج شامل في الرياضيات والفيزياء والعلوم لشعبتَي العلوم والتقني رياضي، مع متابعة فردية دقيقة.",
-      price: "6,000 د.ج / شهرياً",
-    },
-    {
-      slug: "english",
-      img: `${import.meta.env.BASE_URL}course-english.jpg`,
-      title: "اللغة الإنجليزية",
-      desc: "دورات من المستوى المبتدئ إلى المتقدم في المحادثة والكتابة والقراءة، مع مدرسين متخصصين.",
-      price: "4,500 د.ج / شهرياً",
-    },
-    {
-      slug: "robotics",
-      img: `${import.meta.env.BASE_URL}course-robotics.jpg`,
-      title: "الروبوتيك للأطفال",
-      desc: "تعلم البرمجة والروبوتيك للأعمار 8-14 سنة بأسلوب تفاعلي ممتع يطوّر التفكير المنطقي والإبداعي.",
-      price: "5,000 د.ج / شهرياً",
-    },
-  ];
+  const [activeTab, setActiveTab] = useState("adults");
+  const currentTab = TABS.find((t) => t.id === activeTab)!;
 
   return (
-    <section id="courses-grid" className="py-20 bg-white">
+    <section id="courses-grid" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
           <span className="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
             برامجنا الدراسية
@@ -268,43 +343,108 @@ function CoursesGrid() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {courses.map((course, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
-              viewport={{ once: true }}
-            >
-              <Card className="overflow-hidden group hover:shadow-2xl transition-shadow duration-300 border-none shadow-md h-full flex flex-col">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={course.img}
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                </div>
-                <CardContent className="pt-6 px-6 pb-6 flex flex-col flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{course.title}</h3>
-                  <p className="text-muted-foreground text-sm mb-4 flex-1">{course.desc}</p>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
-                      {course.price}
+        {/* Toggle pills */}
+        <div className="flex justify-center mb-12">
+          <div className="inline-flex bg-white border border-gray-200 rounded-full p-1 shadow-sm gap-1">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? "bg-gray-900 text-white shadow"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Cards with animated tab switch */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"
+          >
+            {currentTab.courses.map((course, i) => (
+              <div
+                key={i}
+                className={`relative bg-white rounded-2xl flex flex-col transition-all duration-300 ${
+                  course.featured
+                    ? "border-2 border-primary shadow-2xl scale-105 z-10"
+                    : "border border-gray-100 shadow-md"
+                }`}
+              >
+                {/* Most popular badge */}
+                {course.featured && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+                    <span className="bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full shadow">
+                      الأكثر طلباً
                     </span>
+                  </div>
+                )}
+
+                <div className="p-8 flex flex-col flex-1">
+                  {/* Icon */}
+                  <div className="text-5xl text-center mb-4">{course.icon}</div>
+
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-center text-gray-900 mb-3">
+                    {course.title}
+                  </h3>
+
+                  {/* Price */}
+                  <div className="text-center mb-6">
+                    <span className="text-3xl font-black text-primary">
+                      {course.price.split(" / ")[0]}
+                    </span>
+                    <span className="text-gray-400 text-sm mr-1">
+                      {" "}/ {course.price.split(" / ")[1]}
+                    </span>
+                  </div>
+
+                  {/* Features */}
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {course.features.map((f, j) => (
+                      <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
+                        <span className="text-primary font-bold text-base leading-none">✓</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA button */}
+                  <a
+                    href="#registration"
+                    className={`block w-full text-center py-3 rounded-xl font-bold text-sm transition-all ${
+                      course.featured
+                        ? "bg-primary text-white hover:bg-primary/90 shadow-lg"
+                        : "border-2 border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
+                    }`}
+                  >
+                    اشترك الآن
+                  </a>
+
+                  {/* Learn more link */}
+                  {course.slug && (
                     <Link
                       href={`/courses/${course.slug}`}
-                      className="text-primary font-semibold text-sm hover:underline flex items-center gap-1"
+                      className="block text-center text-primary text-xs font-semibold mt-3 hover:underline"
                     >
                       تعرف على المزيد ←
                     </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );
