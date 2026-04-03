@@ -227,6 +227,7 @@ interface CourseCard {
   icon: string;
   title: string;
   price: string;
+  img?: string;
   features: string[];
   featured?: boolean;
 }
@@ -241,6 +242,7 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
         icon: "📚",
         title: "تحضير البكالوريا",
         price: "6,000 د.ج / شهر",
+        img: "course-bac.jpg",
         features: [
           "رياضيات وفيزياء وعلوم",
           "متابعة فردية دقيقة",
@@ -253,6 +255,7 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
         icon: "🌍",
         title: "اللغة الإنجليزية",
         price: "4,500 د.ج / شهر",
+        img: "course-english.jpg",
         features: [
           "محادثة وكتابة وقراءة",
           "مستويات متعددة",
@@ -279,21 +282,23 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
     label: "دورات الصغار 🧒",
     courses: [
       {
-        icon: "🎨",
-        title: "الرسم الإبداعي",
-        price: "3,000 د.ج / شهر",
+        icon: "🤖",
+        title: "روبوتيك المبتدئين",
+        price: "3,500 د.ج / شهر",
+        img: "course-robotics.jpg",
         features: [
-          "فنون بصرية للأطفال",
-          "تنمية الإبداع",
-          "مشاريع فنية أسبوعية",
-          "للأعمار 6-12 سنة",
+          "مقدمة في الروبوتيك",
+          "تجميع نماذج بسيطة",
+          "أساسيات البرمجة المرئية",
+          "للأعمار 6-9 سنة",
         ],
       },
       {
         slug: "robotics",
-        icon: "🤖",
+        icon: "🏆",
         title: "الروبوتيك للأطفال",
         price: "5,000 د.ج / شهر",
+        img: "course-robotics.jpg",
         features: [
           "برمجة وتجميع روبوتات",
           "Scratch والبرمجة المرئية",
@@ -303,14 +308,15 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
         featured: true,
       },
       {
-        icon: "🔢",
-        title: "رياضيات تفاعلية",
-        price: "3,000 د.ج / شهر",
+        icon: "💡",
+        title: "روبوتيك متقدم",
+        price: "6,000 د.ج / شهر",
+        img: "course-robotics.jpg",
         features: [
-          "حساب ذهني سريع",
-          "ألعاب رياضية تعليمية",
-          "تقوية الأساس الدراسي",
-          "للأعمار 7-13 سنة",
+          "برمجة Python وArduino",
+          "تصميم وطباعة 3D",
+          "مشاريع مسابقات دولية",
+          "للأعمار 12-16 سنة",
         ],
       },
     ],
