@@ -310,62 +310,6 @@ function CoursesGrid() {
   );
 }
 
-function CurriculumSection() {
-  const stats = [
-    { value: "تدريب تفاعلي", label: "منهجية التعلم" },
-    { value: "3 مواد رئيسية", label: "مواد البرنامج" },
-    { value: "6 ساعة/أسبوع", label: "تدريب مكثف" },
-    { value: "8–18 سنة", label: "الفئة العمرية" },
-  ];
-
-
-  return (
-    <section id="curriculum" className="bg-slate-50">
-      {/* Red header banner */}
-      <div className="bg-primary py-16 px-4">
-        <div className="container mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <span className="inline-block bg-white/20 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
-              تعليم وتقنية
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              برنامجنا الدراسي
-            </h2>
-            <p className="text-white/80 max-w-2xl mx-auto text-lg">
-              منهج تعليمي متكامل يجمع بين الأكاديمية والتطبيق العملي، مصمم لتحقيق أعلى مستويات التفوق لأبنائكم.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Stats cards — overlapping the white area below */}
-        <div className="container mx-auto mt-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <div className="bg-white rounded-xl px-5 py-5 text-center shadow-lg border border-slate-100">
-                  <div className="text-lg md:text-xl font-bold text-primary mb-1">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-    </section>
-  );
-}
 
 function Testimonials() {
   return (
@@ -689,7 +633,6 @@ export default function Home() {
       <Hero />
       <About />
       <CoursesGrid />
-      <CurriculumSection />
       <Testimonials />
       <FAQ />
       <Registration />
