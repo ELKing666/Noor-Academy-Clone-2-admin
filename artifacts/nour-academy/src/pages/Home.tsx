@@ -10,9 +10,6 @@ import {
   GraduationCap,
   Award,
   Target,
-  BookOpen,
-  Globe,
-  Cpu,
   CheckCircle,
   Phone,
   Mail,
@@ -224,58 +221,6 @@ function About() {
   );
 }
 
-function Courses() {
-  return (
-    <section id="courses" className="py-20 bg-slate-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">دوراتنا التعليمية</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="border-t-4 border-t-primary hover:shadow-xl transition-shadow relative overflow-hidden group">
-            <CardContent className="pt-8 px-6 pb-8">
-              <BookOpen className="w-12 h-12 text-primary mb-6 group-hover:scale-110 transition-transform" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">تحضير البكالوريا</h3>
-              <p className="text-muted-foreground mb-6 h-20">
-                رياضيات، فيزياء، علوم في شعبتَي العلوم والرياضيات. منهجية دقيقة للنجاح.
-              </p>
-              <div className="text-lg font-bold text-amber-500 bg-amber-50 inline-block px-4 py-2 rounded-full">
-                6,000 د.ج / شهرياً
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-t-4 border-t-amber-400 hover:shadow-xl transition-shadow relative overflow-hidden group">
-            <CardContent className="pt-8 px-6 pb-8">
-              <Globe className="w-12 h-12 text-amber-500 mb-6 group-hover:scale-110 transition-transform" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">اللغة الإنجليزية</h3>
-              <p className="text-muted-foreground mb-6 h-20">
-                من المستوى المبتدئ إلى المتقدم، محادثة وكتابة. نؤهلك للتواصل بطلاقة.
-              </p>
-              <div className="text-lg font-bold text-primary bg-red-50 inline-block px-4 py-2 rounded-full">
-                4,500 د.ج / شهرياً
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-t-4 border-t-primary hover:shadow-xl transition-shadow relative overflow-hidden group">
-            <CardContent className="pt-8 px-6 pb-8">
-              <Cpu className="w-12 h-12 text-primary mb-6 group-hover:scale-110 transition-transform" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">الروبوتيك للأطفال</h3>
-              <p className="text-muted-foreground mb-6 h-20">
-                تعلم البرمجة والروبوتيك للأعمار 8-14 سنة. تنمية مهارات التفكير المنطقي.
-              </p>
-              <div className="text-lg font-bold text-amber-500 bg-amber-50 inline-block px-4 py-2 rounded-full">
-                5,000 د.ج / شهرياً
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function CoursesGrid() {
   const courses = [
@@ -743,7 +688,6 @@ export default function Home() {
       <Navbar />
       <Hero />
       <About />
-      <Courses />
       <CoursesGrid />
       <CurriculumSection />
       <Testimonials />
