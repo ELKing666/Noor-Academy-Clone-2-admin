@@ -280,18 +280,21 @@ function Courses() {
 function CoursesGrid() {
   const courses = [
     {
+      slug: "bac",
       img: `${import.meta.env.BASE_URL}course-bac.jpg`,
       title: "تحضير البكالوريا",
       desc: "منهج شامل في الرياضيات والفيزياء والعلوم لشعبتَي العلوم والتقني رياضي، مع متابعة فردية دقيقة.",
       price: "6,000 د.ج / شهرياً",
     },
     {
+      slug: "english",
       img: `${import.meta.env.BASE_URL}course-english.jpg`,
       title: "اللغة الإنجليزية",
       desc: "دورات من المستوى المبتدئ إلى المتقدم في المحادثة والكتابة والقراءة، مع مدرسين متخصصين.",
       price: "4,500 د.ج / شهرياً",
     },
     {
+      slug: "robotics",
       img: `${import.meta.env.BASE_URL}course-robotics.jpg`,
       title: "الروبوتيك للأطفال",
       desc: "تعلم البرمجة والروبوتيك للأعمار 8-14 سنة بأسلوب تفاعلي ممتع يطوّر التفكير المنطقي والإبداعي.",
@@ -345,12 +348,12 @@ function CoursesGrid() {
                     <span className="text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
                       {course.price}
                     </span>
-                    <a
-                      href="#registration"
+                    <Link
+                      href={`/courses/${course.slug}`}
                       className="text-primary font-semibold text-sm hover:underline flex items-center gap-1"
                     >
                       تعرف على المزيد ←
-                    </a>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
