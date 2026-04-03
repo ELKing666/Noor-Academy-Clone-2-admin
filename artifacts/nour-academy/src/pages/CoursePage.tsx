@@ -197,7 +197,7 @@ export default function CoursePage() {
     <div className="bg-gray-50 text-gray-800 min-h-screen">
       {/* Back button */}
       <Link
-        href="/#courses-grid"
+        href="/#courses"
         className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-white text-primary font-bold px-4 py-2 rounded-full shadow-lg hover:bg-primary hover:text-white transition-all text-sm"
       >
         → الرئيسية

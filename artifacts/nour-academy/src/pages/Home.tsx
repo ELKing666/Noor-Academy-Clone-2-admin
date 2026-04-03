@@ -480,7 +480,7 @@ function CoursesGrid() {
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
   return (
-    <section id="courses-grid" className="py-20 bg-gray-50">
+    <section id="courses" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Section header */}
         <motion.div
