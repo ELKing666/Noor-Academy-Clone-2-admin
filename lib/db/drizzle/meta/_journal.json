@@ -8,6 +8,13 @@
       "when": 1775466159556,
       "tag": "0000_mean_barracuda",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1744027200000,
+      "tag": "0001_add_courses_table",
+      "breakpoints": true
     }
   ]
 }

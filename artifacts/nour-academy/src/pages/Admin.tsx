@@ -557,10 +557,10 @@ function CoursesTab({ password }: { password: string }) {
         },
       );
     } else if (modal?.mode === "edit") {
-      const { id, ...rest } = course;
-      void id;
+      const editModal = modal as { mode: "edit"; course: Course };
+      const { id: _id, ...rest } = course;
       updateCourse.mutate(
-        { password, id: (modal as { mode: "edit"; course: Course }).course.id, course: rest },
+        { password, id: editModal.course.id, course: rest },
         {
           onSuccess: () => {
             setModal(null);
