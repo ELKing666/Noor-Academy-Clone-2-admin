@@ -180,7 +180,7 @@ const COURSES: Record<string, CourseData> = {
 export default function CoursePage() {
   const params = useParams<{ slug: string }>();
   const course = COURSES[params.slug ?? ""];
-  const { data: siteContent, isLoading: isPricingLoading } = useSiteContent();
+  const { data: siteContent, isLoadingContent: isPricingLoading } = useSiteContent();
 
   if (!course) {
     return (

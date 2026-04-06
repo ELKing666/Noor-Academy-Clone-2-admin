@@ -693,7 +693,7 @@ function Testimonials() {
 }
 
 function FAQ() {
-  const { data, isLoading } = useSiteContent();
+  const { data, isLoadingContent: isLoading } = useSiteContent();
   const faqItems = data?.faq ?? [];
 
   return (
@@ -921,7 +921,7 @@ function Registration() {
 }
 
 function Contact() {
-  const { data, isLoading } = useSiteContent();
+  const { data, isLoadingContent: isLoading } = useSiteContent();
   const contact = data?.contact;
 
   const contactItems = [

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSiteContent, useUpdateSiteContent, DEFAULT_CONTENT } from "@/hooks/use-site-content";
+import { useAdminContent, useUpdateSiteContent, DEFAULT_CONTENT } from "@/hooks/use-site-content";
 import type { SiteContent, FaqItem } from "@/hooks/use-site-content";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,8 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/login", {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${base}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
@@ -305,22 +306,21 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 function AdminPanel({ password, onLogout }: { password: string; onLogout: () => void }) {
-  const { data: remoteContent, isLoading } = useSiteContent();
+  const { data: remoteContent, isLoading, isError } = useAdminContent(password);
   const updateMutation = useUpdateSiteContent();
   const { toast } = useToast();
 
   const [activeTab, setActiveTab] = useState<Tab>("pricing");
-  const [localContent, setLocalContent] = useState<SiteContent>(DEFAULT_CONTENT);
-  const [initialized, setInitialized] = useState(false);
+  const [localContent, setLocalContent] = useState<SiteContent | null>(null);
 
   useEffect(() => {
-    if (remoteContent && !initialized) {
+    if (remoteContent && !localContent) {
       setLocalContent(remoteContent);
-      setInitialized(true);
     }
-  }, [remoteContent, initialized]);
+  }, [remoteContent, localContent]);
 
   async function handleSave() {
+    if (!localContent) return;
     updateMutation.mutate(
       { password, content: localContent },
       {
@@ -341,10 +341,10 @@ function AdminPanel({ password, onLogout }: { password: string; onLogout: () => 
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !localContent) {
     return (
       <div className="min-h-screen flex items-center justify-center" dir="rtl">
-        <p className="text-gray-500">جارٍ التحميل...</p>
+        <p className="text-gray-500">{isError ? "تعذّر تحميل البيانات" : "جارٍ التحميل..."}</p>
       </div>
     );
   }

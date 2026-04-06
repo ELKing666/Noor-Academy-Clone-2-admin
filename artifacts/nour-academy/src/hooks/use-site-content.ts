@@ -27,7 +27,7 @@ export interface SiteContent {
   };
 }
 
-const DEFAULT_CONTENT: SiteContent = {
+export const DEFAULT_CONTENT: SiteContent = {
   faq: [
     {
       id: "1",
@@ -84,17 +84,41 @@ const DEFAULT_CONTENT: SiteContent = {
 };
 
 async function fetchContent(): Promise<SiteContent> {
-  const res = await fetch("/api/content");
-  if (!res.ok) return DEFAULT_CONTENT;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const res = await fetch(`${base}/api/content`);
+  if (!res.ok) throw new Error("fetch failed");
+  return res.json();
+}
+
+async function fetchAdminContent(password: string): Promise<SiteContent> {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const res = await fetch(`${base}/api/admin/content`, {
+    headers: { Authorization: `Bearer ${password}` },
+  });
+  if (!res.ok) throw new Error("fetch failed");
   return res.json();
 }
 
 export function useSiteContent() {
-  return useQuery<SiteContent>({
+  const result = useQuery<SiteContent>({
     queryKey: ["site-content"],
     queryFn: fetchContent,
     staleTime: 5 * 60 * 1000,
     placeholderData: DEFAULT_CONTENT,
+  });
+  return {
+    ...result,
+    isLoadingContent: result.isPlaceholderData || result.isLoading,
+  };
+}
+
+export function useAdminContent(password: string) {
+  return useQuery<SiteContent>({
+    queryKey: ["admin-content", password],
+    queryFn: () => fetchAdminContent(password),
+    enabled: !!password,
+    staleTime: 0,
+    retry: false,
   });
 }
 
@@ -103,7 +127,8 @@ export function useUpdateSiteContent() {
 
   return useMutation<void, Error, { password: string; content: SiteContent }>({
     mutationFn: async ({ password, content }) => {
-      const res = await fetch("/api/admin/content", {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${base}/api/admin/content`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -118,10 +143,9 @@ export function useUpdateSiteContent() {
         );
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, { password }) => {
       queryClient.invalidateQueries({ queryKey: ["site-content"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-content", password] });
     },
   });
 }
-
-export { DEFAULT_CONTENT };
