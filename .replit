@@ -1,4 +1,4 @@
-modules = ["nodejs-24"]
+modules = ["nodejs-24", "postgresql-16"]
 
 [[artifacts]]
 id = "artifacts/api-server"
@@ -29,3 +29,6 @@ timeoutMs = 20000
 
 [userenv.shared]
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCeDziEvarOdoDRZhxDa392G7IwkiX0dgmhZO_PqvUz0doEGpI2xjIke4lSVErFx3huw/exec"
+
+[nix]
+channel = "stable-25_05"

@@ -1,11 +1,7 @@
 import { Router } from "express";
-import { eq } from "drizzle-orm";
-import { db, siteSettingsTable } from "@workspace/db";
-import { getContent, type SiteContent } from "./content";
+import { getContent, setContent, type SiteContent } from "./content";
 
 const router = Router();
-
-const CONTENT_KEY = "site_content";
 
 function requireAdmin(
   req: import("express").Request,
@@ -52,16 +48,7 @@ router.put("/admin/content", requireAdmin, async (req, res) => {
     return;
   }
 
-  const value = JSON.stringify(content);
-
-  await db
-    .insert(siteSettingsTable)
-    .values({ key: CONTENT_KEY, value })
-    .onConflictDoUpdate({
-      target: siteSettingsTable.key,
-      set: { value, updated_at: new Date() },
-    });
-
+  await setContent(content);
   res.json({ success: true });
 });
 
