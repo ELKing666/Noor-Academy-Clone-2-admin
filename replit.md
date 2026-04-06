@@ -46,15 +46,24 @@ Full Arabic RTL educational academy landing page website.
 - Red footer
 - WhatsApp floating button
 
+**Features:**
+- Admin page at `/admin` — password-protected panel to edit pricing, FAQ, and contact info live
+
 **Backend API (via api-server):**
 - `POST /api/register` — register a student (saves to DB, fire-and-forget Google Sheets sync)
 - `GET /api/students` — list all students
 - `GET /api/export` — download students CSV (UTF-8 BOM for Arabic Excel support)
 - `GET /api/healthz` — health check
+- `GET /api/content` — public: returns all editable site content (FAQ, pricing, contact)
+- `POST /api/admin/login` — validate admin password
+- `GET /api/admin/content` — protected: returns editable content (requires `Authorization: Bearer <ADMIN_PASSWORD>`)
+- `PUT /api/admin/content` — protected: saves updated content to DB
 
 **Database:**
 - `students` table: id, name, phone, course, payment_method, status, created_at
+- `site_settings` table: key (PK), value (JSON text), updated_at
 
 **Environment variables:**
 - `DATABASE_URL` — PostgreSQL connection string (auto-set by Replit DB)
 - `GOOGLE_SCRIPT_URL` — optional, Google Apps Script URL for Sheets sync
+- `ADMIN_PASSWORD` — secret: password for the /admin panel
