@@ -45,6 +45,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRegisterStudent } from "@workspace/api-client-react";
 import { useSiteContent } from "@/hooks/use-site-content";
+import { useCourses } from "@/hooks/use-courses";
 
 // --- Form Schema ---
 const registerSchema = z.object({
@@ -373,121 +374,40 @@ function About() {
 }
 
 
-interface CourseCard {
-  slug: string;
-  pricingKey: "bac" | "english" | "robotics" | null;
-  icon: string;
-  title: string;
-  defaultPrice: string;
-  img?: string;
-  features: string[];
-  featured?: boolean;
-}
-
-const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
-  {
-    id: "adults",
-    label: "دورات الكبار 👨",
-    courses: [
-      {
-        slug: "bac",
-        pricingKey: "bac",
-        icon: "📚",
-        title: "تحضير البكالوريا",
-        defaultPrice: "6,000 د.ج / شهر",
-        img: "course-bac.jpg",
-        features: [
-          "رياضيات وفيزياء وعلوم",
-          "متابعة فردية دقيقة",
-          "اختبارات تجريبية دورية",
-          "تطبيق عملي 100%",
-        ],
-      },
-      {
-        slug: "english",
-        pricingKey: "english",
-        icon: "🌍",
-        title: "اللغة الإنجليزية",
-        defaultPrice: "4,500 د.ج / شهر",
-        img: "course-english.jpg",
-        features: [
-          "محادثة وكتابة وقراءة",
-          "مستويات متعددة",
-          "مدرسون متخصصون",
-          "تمارين يومية تفاعلية",
-        ],
-        featured: true,
-      },
-      {
-        slug: "bac",
-        pricingKey: null,
-        icon: "🎯",
-        title: "منهجية البكالوريا",
-        defaultPrice: "3,500 د.ج / شهر",
-        features: [
-          "تقنيات الحفظ للامتحانات",
-          "إدارة الوقت خلال الامتحان",
-          "تحليل أسئلة السنوات السابقة",
-          "بناء الثقة بالنفس",
-        ],
-      },
-    ],
-  },
-  {
-    id: "kids",
-    label: "دورات الصغار 🧒",
-    courses: [
-      {
-        slug: "robotics",
-        pricingKey: null,
-        icon: "🤖",
-        title: "روبوتيك المبتدئين",
-        defaultPrice: "3,500 د.ج / شهر",
-        img: "course-robotics.jpg",
-        features: [
-          "مقدمة في الروبوتيك",
-          "تجميع نماذج بسيطة",
-          "أساسيات البرمجة المرئية",
-          "للأعمار 6-9 سنة",
-        ],
-      },
-      {
-        slug: "robotics",
-        pricingKey: "robotics",
-        icon: "🏆",
-        title: "الروبوتيك للأطفال",
-        defaultPrice: "5,000 د.ج / شهر",
-        img: "course-robotics.jpg",
-        features: [
-          "برمجة وتجميع روبوتات",
-          "Scratch والبرمجة المرئية",
-          "مشاريع عملية كل وحدة",
-          "للأعمار 8-14 سنة",
-        ],
-        featured: true,
-      },
-      {
-        slug: "robotics",
-        pricingKey: null,
-        icon: "💡",
-        title: "روبوتيك متقدم",
-        defaultPrice: "6,000 د.ج / شهر",
-        img: "course-robotics.jpg",
-        features: [
-          "برمجة Python وArduino",
-          "تصميم وطباعة 3D",
-          "مشاريع مسابقات دولية",
-          "للأعمار 12-16 سنة",
-        ],
-      },
-    ],
-  },
-];
+const COURSE_FEATURES: Record<string, string[]> = {
+  bac: [
+    "رياضيات وفيزياء وعلوم",
+    "متابعة فردية دقيقة",
+    "اختبارات تجريبية دورية",
+    "تطبيق عملي 100%",
+  ],
+  english: [
+    "محادثة وكتابة وقراءة",
+    "مستويات متعددة",
+    "مدرسون متخصصون",
+    "تمارين يومية تفاعلية",
+  ],
+  robotics: [
+    "برمجة وتجميع روبوتات",
+    "Scratch والبرمجة المرئية",
+    "مشاريع عملية كل وحدة",
+    "للأعمار 8-14 سنة",
+  ],
+};
 
 function CoursesGrid() {
   const [activeTab, setActiveTab] = useState("adults");
-  const currentTab = TABS.find((t) => t.id === activeTab)!;
-  const { data: siteContent } = useSiteContent();
+  const { data: courses, isLoading } = useCourses();
+
+  const adultsCourses = (courses ?? []).filter((c) => c.category === "adults");
+  const kidsCourses = (courses ?? []).filter((c) => c.category === "kids");
+
+  const CATEGORY_TABS = [
+    ...(adultsCourses.length > 0 ? [{ id: "adults", label: "دورات الكبار 👨" }] : []),
+    ...(kidsCourses.length > 0 ? [{ id: "kids", label: "دورات الصغار 🧒" }] : []),
+  ];
+
+  const currentCourses = activeTab === "adults" ? adultsCourses : kidsCourses;
 
   return (
     <section id="courses" className="py-20 bg-gray-50">
@@ -512,69 +432,80 @@ function CoursesGrid() {
         </motion.div>
 
         {/* Toggle pills */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex bg-white border border-gray-200 rounded-full p-1 shadow-sm gap-1">
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? "bg-gray-900 text-white shadow"
-                    : "border border-gray-300 text-gray-500 hover:border-gray-500 hover:text-gray-800"
-                }`}
-              >
-                {tab.label}
-              </button>
+        {CATEGORY_TABS.length > 1 && (
+          <div className="flex justify-center mb-12">
+            <div className="inline-flex bg-white border border-gray-200 rounded-full p-1 shadow-sm gap-1">
+              {CATEGORY_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? "bg-gray-900 text-white shadow"
+                      : "border border-gray-300 text-gray-500 hover:border-gray-500 hover:text-gray-800"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Loading skeletons */}
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-80 rounded-2xl" />
             ))}
           </div>
-        </div>
+        )}
 
         {/* Cards with animated tab switch */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"
-          >
-            {currentTab.courses.map((course, i) => (
-              <div
-                key={i}
-                className={`relative bg-white rounded-2xl flex flex-col transition-all duration-300 ${
-                  course.featured
-                    ? "border-2 border-primary shadow-2xl scale-105 z-10"
-                    : "border border-gray-100 shadow-md"
-                }`}
-              >
-                {/* Most popular badge */}
-                {course.featured && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                    <span className="bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full shadow">
-                      الأكثر طلباً
-                    </span>
-                  </div>
-                )}
+        {!isLoading && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"
+            >
+              {currentCourses.map((course) => {
+                const features = COURSE_FEATURES[course.id] ?? [
+                  course.description || "محتوى تعليمي متميز",
+                  `المدة: ${course.duration || "حسب الجدول"}`,
+                ];
+                const parts = course.price.split(" / ");
+                return (
+                  <div
+                    key={course.id}
+                    className={`relative bg-white rounded-2xl flex flex-col transition-all duration-300 ${
+                      course.is_featured
+                        ? "border-2 border-primary shadow-2xl scale-105 z-10"
+                        : "border border-gray-100 shadow-md"
+                    }`}
+                  >
+                    {/* Most popular badge */}
+                    {course.is_featured && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+                        <span className="bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full shadow">
+                          الأكثر طلباً
+                        </span>
+                      </div>
+                    )}
 
-                <div className="p-8 flex flex-col flex-1">
-                  {/* Icon */}
-                  <div className="text-5xl text-center mb-4">{course.icon}</div>
+                    <div className="p-8 flex flex-col flex-1">
+                      {/* Icon */}
+                      <div className="text-5xl text-center mb-4">{course.icon}</div>
 
-                  {/* Title */}
-                  <h3 className="text-xl font-bold text-center text-gray-900 mb-3">
-                    {course.title}
-                  </h3>
+                      {/* Title */}
+                      <h3 className="text-xl font-bold text-center text-gray-900 mb-3">
+                        {course.title}
+                      </h3>
 
-                  {/* Price */}
-                  {(() => {
-                    const apiPrice =
-                      course.pricingKey && siteContent?.pricing?.[course.pricingKey]
-                        ? siteContent.pricing[course.pricingKey].price
-                        : course.defaultPrice;
-                    const parts = apiPrice.split(" / ");
-                    return (
+                      {/* Price */}
                       <div className="text-center mb-6">
                         <span className="text-3xl font-black text-primary">
                           {parts[0]}
@@ -583,43 +514,43 @@ function CoursesGrid() {
                           {parts[1] ? ` / ${parts[1]}` : ""}
                         </span>
                       </div>
-                    );
-                  })()}
 
-                  {/* Features */}
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {course.features.map((f, j) => (
-                      <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
-                        <span className="text-primary font-bold text-base leading-none">✓</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
+                      {/* Features */}
+                      <ul className="space-y-3 mb-8 flex-1">
+                        {features.map((f, j) => (
+                          <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
+                            <span className="text-primary font-bold text-base leading-none">✓</span>
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
 
-                  {/* CTA button */}
-                  <a
-                    href="#registration"
-                    className={`block w-full text-center py-3 rounded-xl font-bold text-sm transition-all ${
-                      course.featured
-                        ? "bg-primary text-white hover:bg-primary/90 shadow-lg"
-                        : "border-2 border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
-                    }`}
-                  >
-                    اشترك الآن
-                  </a>
+                      {/* CTA button */}
+                      <a
+                        href="#registration"
+                        className={`block w-full text-center py-3 rounded-xl font-bold text-sm transition-all ${
+                          course.is_featured
+                            ? "bg-primary text-white hover:bg-primary/90 shadow-lg"
+                            : "border-2 border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
+                        }`}
+                      >
+                        اشترك الآن
+                      </a>
 
-                  {/* Learn more link */}
-                  <Link
-                    href={`/courses/${course.slug}`}
-                    className="block text-center text-primary text-xs font-semibold mt-3 hover:underline"
-                  >
-                    تعرف على المزيد ←
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+                      {/* Learn more link */}
+                      <Link
+                        href={`/courses/${course.id}`}
+                        className="block text-center text-primary text-xs font-semibold mt-3 hover:underline"
+                      >
+                        تعرف على المزيد ←
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
     </section>
   );

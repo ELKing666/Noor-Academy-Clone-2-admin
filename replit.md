@@ -56,12 +56,27 @@ Full Arabic RTL educational academy landing page website.
 - `GET /api/healthz` — health check
 - `GET /api/content` — public: returns all editable site content (FAQ, pricing, contact)
 - `POST /api/admin/login` — validate admin password
-- `GET /api/admin/content` — protected: returns editable content (requires `Authorization: Bearer <ADMIN_PASSWORD>`)
+- `GET /api/admin/content` — protected: returns editable content
 - `PUT /api/admin/content` — protected: saves updated content to DB
+- `GET /api/courses` — public: returns all courses (auto-seeded with 3 defaults)
+- `GET /api/courses/:id` — public: returns single course by slug
+- `POST /api/admin/courses` — protected: create a new course
+- `PUT /api/admin/courses/:id` — protected: update a course
+- `DELETE /api/admin/courses/:id` — protected: delete a course
 
 **Database:**
 - `students` table: id, name, phone, course, payment_method, status, created_at
 - `site_settings` table: key (PK), value (JSON text), updated_at
+- `course_pricing` table: course_slug (PK), price, price_note, updated_at
+- `faq_items` table: id (PK), question, answer, sort_order, updated_at
+- `contact_info` table: id (PK, default "main"), phone, email, address, updated_at
+- `courses` table: id (slug PK), title, description, price, duration, image_url, icon, category, is_featured, sort_order, created_at, updated_at
+
+**Admin panel (`/admin`):**
+- Tab: Courses — full CRUD (add/edit/delete) with modal form; auto-seeded with bac/english/robotics defaults
+- Tab: Pricing — edit price and price note per course (legacy 3-course pricing)
+- Tab: FAQ — add/edit/delete FAQ items
+- Tab: Contact — edit phone, email, address
 
 **Environment variables:**
 - `DATABASE_URL` — PostgreSQL connection string (auto-set by Replit DB)

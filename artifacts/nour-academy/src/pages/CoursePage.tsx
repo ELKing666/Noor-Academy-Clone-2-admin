@@ -1,6 +1,6 @@
 import { useParams, Link } from "wouter";
 import { motion } from "framer-motion";
-import { useSiteContent } from "@/hooks/use-site-content";
+import { useCourse } from "@/hooks/use-courses";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Topic {
@@ -10,32 +10,16 @@ interface Topic {
   tags: string[];
 }
 
-interface Stat {
-  value: string;
-  label: string;
-}
-
-interface CourseData {
-  slug: string;
+interface CourseDetail {
   badge: string;
-  title: string;
-  subtitle: string;
-  img: string;
-  stats: Stat[];
+  stats: { value: string; label: string }[];
   topics: Topic[];
   forWhom: string[];
-  defaultPrice: string;
-  defaultPriceNote: string;
 }
 
-const COURSES: Record<string, CourseData> = {
+const COURSE_DETAILS: Record<string, CourseDetail> = {
   bac: {
-    slug: "bac",
     badge: "شعبة العلوم والتقني رياضي",
-    title: "تحضير البكالوريا",
-    subtitle:
-      "منهج شامل ودقيق في الرياضيات والفيزياء والعلوم الطبيعية، مع متابعة فردية لكل طالب لضمان أعلى نتيجة ممكنة في امتحان البكالوريا.",
-    img: "course-bac.jpg",
     stats: [
       { value: "السنة النهائية", label: "الصف الدراسي" },
       { value: "3 مواد رئيسية", label: "مواد البرنامج" },
@@ -74,17 +58,9 @@ const COURSES: Record<string, CourseData> = {
       "من يعاني من ثغرات في مادة الرياضيات أو الفيزياء.",
       "الطلاب الراغبون في تكملة دراستهم في كليات العلوم أو الهندسة.",
     ],
-    defaultPrice: "6,000 د.ج / شهرياً",
-    defaultPriceNote: "يشمل السعر جميع المواد الثلاث — 6 ساعات أسبوعياً لمدة شهر كامل.",
   },
-
   english: {
-    slug: "english",
     badge: "من مبتدئ إلى متقدم",
-    title: "اللغة الإنجليزية",
-    subtitle:
-      "دورات مدروسة بعناية لتطوير مهارات المحادثة والكتابة والقراءة، مع مدرسين متخصصين ومحتوى حديث مناسب لجميع المستويات والأعمار.",
-    img: "course-english.jpg",
     stats: [
       { value: "جميع الأعمار", label: "الفئة المستهدفة" },
       { value: "4 مستويات", label: "مسارات التعلم" },
@@ -123,17 +99,9 @@ const COURSES: Record<string, CourseData> = {
       "من يريد الاستعداد لاختبارات الكفاءة الدولية.",
       "الأطفال والمبتدئون الذين يبدأون من الصفر.",
     ],
-    defaultPrice: "4,500 د.ج / شهرياً",
-    defaultPriceNote: "4 ساعات أسبوعياً — يشمل المواد التعليمية ووصولاً لمكتبة رقمية.",
   },
-
   robotics: {
-    slug: "robotics",
     badge: "للأعمار 8-14 سنة",
-    title: "الروبوتيك للأطفال",
-    subtitle:
-      "برنامج تفاعلي وممتع يُعلّم الأطفال أساسيات البرمجة وتجميع الروبوتات بأسلوب لعبي، ينمّي التفكير المنطقي والإبداعي ويؤسس لمستقبل تقني مشرق.",
-    img: "course-robotics.jpg",
     stats: [
       { value: "8-14 سنة", label: "الفئة العمرية" },
       { value: "4 وحدات", label: "وحدات البرنامج" },
@@ -172,17 +140,30 @@ const COURSES: Record<string, CourseData> = {
       "الأطفال الراغبون في تطوير مهارات القرن الـ21.",
       "من يبحث عن نشاط تعليمي ممتع ومفيد في وقت الفراغ.",
     ],
-    defaultPrice: "5,000 د.ج / شهرياً",
-    defaultPriceNote: "3 ساعات أسبوعياً — يشمل جميع مواد ومكونات الروبوت.",
   },
 };
 
 export default function CoursePage() {
   const params = useParams<{ slug: string }>();
-  const course = COURSES[params.slug ?? ""];
-  const { data: siteContent, isLoadingContent: isPricingLoading } = useSiteContent();
+  const slug = params.slug ?? "";
+  const { data: course, isLoading, isError } = useCourse(slug);
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-  if (!course) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8 flex flex-col gap-6">
+        <Skeleton className="h-64 rounded-3xl" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-20 rounded-2xl" />
+          ))}
+        </div>
+        <Skeleton className="h-48 rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (isError || !course) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center gap-4 p-8">
         <p className="text-2xl font-bold text-gray-700">الدورة غير موجودة</p>
@@ -193,17 +174,26 @@ export default function CoursePage() {
     );
   }
 
-  const slug = course.slug as "bac" | "english" | "robotics";
-  const pricingData = siteContent?.pricing?.[slug];
-  const price = pricingData?.price ?? course.defaultPrice;
-  const priceNote = pricingData?.priceNote ?? course.defaultPriceNote;
+  const details = COURSE_DETAILS[course.id];
+  const price = course.price;
+  const imgSrc = course.image_url
+    ? course.image_url
+    : `${import.meta.env.BASE_URL}course-${course.id}.jpg`;
 
-  const imgSrc = `${import.meta.env.BASE_URL}${course.img}`;
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const defaultStats = course.duration
+    ? [
+        { value: course.icon, label: course.title },
+        { value: course.duration, label: "المدة الأسبوعية" },
+        { value: course.category === "kids" ? "الأطفال" : "الكبار", label: "الفئة" },
+        { value: course.is_featured ? "الأكثر طلباً" : "دورة متميزة", label: "التصنيف" },
+      ]
+    : [];
+
+  const stats = details?.stats ?? defaultStats;
+  const badge = details?.badge ?? (course.category === "kids" ? "للأطفال" : "للكبار");
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
-      {/* Back button */}
+    <div className="bg-gray-50 text-gray-800 min-h-screen" dir="rtl">
       <Link
         href="/#courses"
         className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-white text-primary font-bold px-4 py-2 rounded-full shadow-lg hover:bg-primary hover:text-white transition-all text-sm"
@@ -225,7 +215,6 @@ export default function CoursePage() {
             opacity: 0.18,
           }}
         />
-        {/* Strong overlay for text legibility */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <motion.span
@@ -234,7 +223,7 @@ export default function CoursePage() {
             transition={{ duration: 0.4 }}
             className="inline-block bg-amber-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold mb-5 tracking-wide"
           >
-            {course.badge}
+            {badge}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -250,69 +239,73 @@ export default function CoursePage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg opacity-90 leading-relaxed"
           >
-            {course.subtitle}
+            {course.description}
           </motion.p>
         </div>
       </header>
 
       {/* Floating stats */}
-      <section className="max-w-5xl mx-auto px-4 -mt-10 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {course.stats.map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 * i }}
-              className="bg-white p-5 rounded-2xl shadow-xl text-center"
-            >
-              <div className="text-primary font-bold text-lg">{s.value}</div>
-              <div className="text-gray-400 text-xs mt-1">{s.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      {stats.length > 0 && (
+        <section className="max-w-5xl mx-auto px-4 -mt-10 relative z-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {stats.map((s, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 * i }}
+                className="bg-white p-5 rounded-2xl shadow-xl text-center"
+              >
+                <div className="text-primary font-bold text-lg">{s.value}</div>
+                <div className="text-gray-400 text-xs mt-1">{s.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* What you'll learn */}
-      <section className="py-24 px-4 max-w-5xl mx-auto">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl font-bold text-gray-900">ماذا ستتعلم؟</h2>
-          <p className="text-gray-500 mt-2">محاور البرنامج التعليمي بالتفصيل</p>
-        </div>
+      {/* What you'll learn — only for courses with detailed curriculum */}
+      {details?.topics && (
+        <section className="py-24 px-4 max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold text-gray-900">ماذا ستتعلم؟</h2>
+            <p className="text-gray-500 mt-2">محاور البرنامج التعليمي بالتفصيل</p>
+          </div>
 
-        <div className="space-y-6">
-          {course.topics.map((topic, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100"
-            >
-              <div className="md:w-1/3 bg-red-50 p-8 flex items-center gap-4">
-                <span className="text-5xl font-black text-primary/20 leading-none">
-                  {topic.num}
-                </span>
-                <h3 className="text-xl font-bold text-primary">{topic.title}</h3>
-              </div>
-              <div className="md:w-2/3 p-8">
-                <p className="text-gray-600 leading-relaxed mb-5">{topic.desc}</p>
-                <div className="flex flex-wrap gap-2">
-                  {topic.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+          <div className="space-y-6">
+            {details.topics.map((topic, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100"
+              >
+                <div className="md:w-1/3 bg-red-50 p-8 flex items-center gap-4">
+                  <span className="text-5xl font-black text-primary/20 leading-none">
+                    {topic.num}
+                  </span>
+                  <h3 className="text-xl font-bold text-primary">{topic.title}</h3>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+                <div className="md:w-2/3 p-8">
+                  <p className="text-gray-600 leading-relaxed mb-5">{topic.desc}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {topic.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* For whom + pricing */}
       <section
@@ -322,30 +315,42 @@ export default function CoursePage() {
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl font-bold mb-6">من يستفيد من هذا البرنامج؟</h2>
-            <ul className="space-y-4">
-              {course.forWhom.map((item, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="bg-white/30 h-6 w-6 flex items-center justify-center rounded-full text-xs shrink-0 mt-0.5">
-                    ✓
-                  </span>
-                  <span className="leading-relaxed">{item}</span>
-                </li>
-              ))}
-            </ul>
+            {details?.forWhom ? (
+              <ul className="space-y-4">
+                {details.forWhom.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="bg-white/30 h-6 w-6 flex items-center justify-center rounded-full text-xs shrink-0 mt-0.5">
+                      ✓
+                    </span>
+                    <span className="leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-white/80 leading-relaxed">
+                {course.description || "هذا البرنامج مناسب لجميع الراغبين في التعلم وتطوير مهاراتهم."}
+              </p>
+            )}
           </div>
 
           <div className="bg-white/10 p-8 rounded-[2rem] border border-white/20">
             <h3 className="text-2xl font-bold mb-4">التسجيل والأسعار</h3>
-            {isPricingLoading ? (
+            {price ? (
               <>
-                <Skeleton className="h-10 w-48 mb-2 bg-white/20" />
-                <Skeleton className="h-4 w-64 mb-8 bg-white/10" />
+                <div className="text-4xl font-bold text-amber-400 mb-2">
+                  {price.split(" / ")[0]}
+                </div>
+                {price.includes(" / ") && (
+                  <p className="text-white/60 mb-8 text-sm">/ {price.split(" / ")[1]}</p>
+                )}
               </>
             ) : (
-              <>
-                <div className="text-4xl font-bold text-amber-400 mb-2">{price}</div>
-                <p className="text-white/60 mb-8 text-sm italic">{priceNote}</p>
-              </>
+              <p className="text-white/60 mb-8 text-sm">تواصل معنا لمعرفة الأسعار</p>
+            )}
+            {course.duration && (
+              <p className="text-white/70 text-sm mb-6">
+                المدة: {course.duration}
+              </p>
             )}
             <a
               href={`${base}/#registration`}

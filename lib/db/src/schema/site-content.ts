@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, boolean, timestamp } from "drizzle-orm/pg-core";
 
 export const coursePricingTable = pgTable("course_pricing", {
   course_slug: text("course_slug").primaryKey(),
@@ -23,6 +23,22 @@ export const contactInfoTable = pgTable("contact_info", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const coursesTable = pgTable("courses", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  price: text("price").notNull().default(""),
+  duration: text("duration").notNull().default(""),
+  image_url: text("image_url").notNull().default(""),
+  icon: text("icon").notNull().default("📚"),
+  category: text("category").notNull().default("adults"),
+  is_featured: boolean("is_featured").notNull().default(false),
+  sort_order: integer("sort_order").notNull().default(0),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export type CoursePricing = typeof coursePricingTable.$inferSelect;
 export type FaqItem = typeof faqItemsTable.$inferSelect;
 export type ContactInfo = typeof contactInfoTable.$inferSelect;
+export type Course = typeof coursesTable.$inferSelect;
