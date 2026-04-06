@@ -341,10 +341,24 @@ function AdminPanel({ password, onLogout }: { password: string; onLogout: () => 
     );
   }
 
+  if (isError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" dir="rtl">
+        <p className="text-red-600 font-semibold">كلمة المرور غير صحيحة أو تعذّر الاتصال بالخادم</p>
+        <button
+          onClick={onLogout}
+          className="bg-[#c0001a] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#a0001a] transition-colors"
+        >
+          العودة لصفحة الدخول
+        </button>
+      </div>
+    );
+  }
+
   if (isLoading || !localContent) {
     return (
       <div className="min-h-screen flex items-center justify-center" dir="rtl">
-        <p className="text-gray-500">{isError ? "تعذّر تحميل البيانات" : "جارٍ التحميل..."}</p>
+        <p className="text-gray-500">جارٍ التحميل...</p>
       </div>
     );
   }
