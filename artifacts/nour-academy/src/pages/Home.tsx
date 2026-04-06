@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRegisterStudent } from "@workspace/api-client-react";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 // --- Form Schema ---
 const registerSchema = z.object({
@@ -674,6 +675,9 @@ function Testimonials() {
 }
 
 function FAQ() {
+  const { data } = useSiteContent();
+  const faqItems = data?.faq ?? [];
+
   return (
     <section id="faq" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 max-w-3xl">
@@ -688,36 +692,14 @@ function FAQ() {
         </motion.div>
 
         <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="item-1" className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
-            <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">كيف يمكنني التسجيل في الدورات؟</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground pb-4">
-              يمكنك التسجيل بسهولة عبر تعبئة النموذج الإلكتروني الموجود في أسفل الصفحة، وسيقوم فريقنا بالتواصل معك لتأكيد التسجيل.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2" className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
-            <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">ما هي أوقات الدراسة؟</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground pb-4">
-              نوفر جداول مرنة تناسب جميع الطلاب، بما في ذلك فترات مسائية وعطلات نهاية الأسبوع.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3" className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
-            <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">ما هي الفئة العمرية لدورة الروبوتيك؟</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground pb-4">
-              دورة الروبوتيك مصممة خصيصاً للأطفال واليافعين الذين تتراوح أعمارهم بين 8 و 14 سنة.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-4" className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
-            <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">ما هي طرق الدفع المتاحة؟</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground pb-4">
-              نقبل الدفع نقداً في مقر الأكاديمية، أو عبر التحويل البريدي (CCP).
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-5" className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
-            <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">هل تقدمون شهادات بعد إتمام الدورات؟</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground pb-4">
-              نعم، نقدم شهادات مشاركة معتمدة من الأكاديمية بعد إتمام دورات اللغات والروبوتيك.
-            </AccordionContent>
-          </AccordionItem>
+          {faqItems.map((item) => (
+            <AccordionItem key={item.id} value={item.id} className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
+              <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">{item.question}</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-4">
+                {item.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
         </Accordion>
       </div>
     </section>
@@ -910,11 +892,14 @@ function Registration() {
 }
 
 function Contact() {
+  const { data } = useSiteContent();
+  const contact = data?.contact;
+
   const contactItems = [
     {
       icon: <Phone size={26} className="text-white" />,
       title: "الهاتف",
-      info: "0555 12 34 56",
+      info: contact?.phone ?? "0555 12 34 56",
       dir: "ltr" as const,
       gradient: "from-blue-500 to-blue-700",
       glow: "hover:shadow-blue-400/30",
@@ -922,7 +907,7 @@ function Contact() {
     {
       icon: <Mail size={26} className="text-white" />,
       title: "البريد الإلكتروني",
-      info: "contact@nour-academy.dz",
+      info: contact?.email ?? "contact@nour-academy.dz",
       dir: undefined,
       gradient: "from-primary to-red-700",
       glow: "hover:shadow-red-400/30",
@@ -930,7 +915,7 @@ function Contact() {
     {
       icon: <MapPin size={26} className="text-white" />,
       title: "العنوان",
-      info: "حي 500 مسكن، شلف، الجزائر",
+      info: contact?.address ?? "حي 500 مسكن، شلف، الجزائر",
       dir: undefined,
       gradient: "from-emerald-500 to-emerald-700",
       glow: "hover:shadow-emerald-400/30",
@@ -973,6 +958,9 @@ function Contact() {
 }
 
 function Footer() {
+  const { data } = useSiteContent();
+  const contact = data?.contact;
+
   return (
     <footer className="bg-primary text-white pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -1000,9 +988,9 @@ function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-6 text-amber-400">اتصل بنا</h3>
             <ul className="space-y-3 text-white/80">
-              <li className="flex items-center gap-2"><MapPin size={18} className="text-amber-400" /> شلف، الجزائر</li>
-              <li className="flex items-center gap-2"><Phone size={18} className="text-amber-400" /> <span dir="ltr">0555 12 34 56</span></li>
-              <li className="flex items-center gap-2"><Mail size={18} className="text-amber-400" /> contact@nour-academy.dz</li>
+              <li className="flex items-center gap-2"><MapPin size={18} className="text-amber-400" /> {contact?.address ?? "شلف، الجزائر"}</li>
+              <li className="flex items-center gap-2"><Phone size={18} className="text-amber-400" /> <span dir="ltr">{contact?.phone ?? "0555 12 34 56"}</span></li>
+              <li className="flex items-center gap-2"><Mail size={18} className="text-amber-400" /> {contact?.email ?? "contact@nour-academy.dz"}</li>
             </ul>
           </div>
         </div>

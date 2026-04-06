@@ -1,5 +1,6 @@
 import { useParams, Link } from "wouter";
 import { motion } from "framer-motion";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 interface Topic {
   num: string;
@@ -22,8 +23,8 @@ interface CourseData {
   stats: Stat[];
   topics: Topic[];
   forWhom: string[];
-  price: string;
-  priceNote: string;
+  defaultPrice: string;
+  defaultPriceNote: string;
 }
 
 const COURSES: Record<string, CourseData> = {
@@ -72,8 +73,8 @@ const COURSES: Record<string, CourseData> = {
       "من يعاني من ثغرات في مادة الرياضيات أو الفيزياء.",
       "الطلاب الراغبون في تكملة دراستهم في كليات العلوم أو الهندسة.",
     ],
-    price: "6,000 د.ج / شهرياً",
-    priceNote: "يشمل السعر جميع المواد الثلاث — 6 ساعات أسبوعياً لمدة شهر كامل.",
+    defaultPrice: "6,000 د.ج / شهرياً",
+    defaultPriceNote: "يشمل السعر جميع المواد الثلاث — 6 ساعات أسبوعياً لمدة شهر كامل.",
   },
 
   english: {
@@ -121,8 +122,8 @@ const COURSES: Record<string, CourseData> = {
       "من يريد الاستعداد لاختبارات الكفاءة الدولية.",
       "الأطفال والمبتدئون الذين يبدأون من الصفر.",
     ],
-    price: "4,500 د.ج / شهرياً",
-    priceNote: "4 ساعات أسبوعياً — يشمل المواد التعليمية ووصولاً لمكتبة رقمية.",
+    defaultPrice: "4,500 د.ج / شهرياً",
+    defaultPriceNote: "4 ساعات أسبوعياً — يشمل المواد التعليمية ووصولاً لمكتبة رقمية.",
   },
 
   robotics: {
@@ -170,14 +171,15 @@ const COURSES: Record<string, CourseData> = {
       "الأطفال الراغبون في تطوير مهارات القرن الـ21.",
       "من يبحث عن نشاط تعليمي ممتع ومفيد في وقت الفراغ.",
     ],
-    price: "5,000 د.ج / شهرياً",
-    priceNote: "3 ساعات أسبوعياً — يشمل جميع مواد ومكونات الروبوت.",
+    defaultPrice: "5,000 د.ج / شهرياً",
+    defaultPriceNote: "3 ساعات أسبوعياً — يشمل جميع مواد ومكونات الروبوت.",
   },
 };
 
 export default function CoursePage() {
   const params = useParams<{ slug: string }>();
   const course = COURSES[params.slug ?? ""];
+  const { data: siteContent } = useSiteContent();
 
   if (!course) {
     return (
@@ -189,6 +191,11 @@ export default function CoursePage() {
       </div>
     );
   }
+
+  const slug = course.slug as "bac" | "english" | "robotics";
+  const pricingData = siteContent?.pricing?.[slug];
+  const price = pricingData?.price ?? course.defaultPrice;
+  const priceNote = pricingData?.priceNote ?? course.defaultPriceNote;
 
   const imgSrc = `${import.meta.env.BASE_URL}${course.img}`;
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -328,8 +335,8 @@ export default function CoursePage() {
 
           <div className="bg-white/10 p-8 rounded-[2rem] border border-white/20">
             <h3 className="text-2xl font-bold mb-4">التسجيل والأسعار</h3>
-            <div className="text-4xl font-bold text-amber-400 mb-2">{course.price}</div>
-            <p className="text-white/60 mb-8 text-sm italic">{course.priceNote}</p>
+            <div className="text-4xl font-bold text-amber-400 mb-2">{price}</div>
+            <p className="text-white/60 mb-8 text-sm italic">{priceNote}</p>
             <a
               href={`${base}/#registration`}
               className="block w-full bg-amber-400 text-gray-900 text-center py-4 rounded-2xl font-bold text-lg hover:bg-amber-300 transition-all"
