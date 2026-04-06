@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Accordion,
   AccordionContent,
@@ -374,9 +375,10 @@ function About() {
 
 interface CourseCard {
   slug: string;
+  pricingKey: "bac" | "english" | "robotics" | null;
   icon: string;
   title: string;
-  price: string;
+  defaultPrice: string;
   img?: string;
   features: string[];
   featured?: boolean;
@@ -389,9 +391,10 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
     courses: [
       {
         slug: "bac",
+        pricingKey: "bac",
         icon: "📚",
         title: "تحضير البكالوريا",
-        price: "6,000 د.ج / شهر",
+        defaultPrice: "6,000 د.ج / شهر",
         img: "course-bac.jpg",
         features: [
           "رياضيات وفيزياء وعلوم",
@@ -402,9 +405,10 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
       },
       {
         slug: "english",
+        pricingKey: "english",
         icon: "🌍",
         title: "اللغة الإنجليزية",
-        price: "4,500 د.ج / شهر",
+        defaultPrice: "4,500 د.ج / شهر",
         img: "course-english.jpg",
         features: [
           "محادثة وكتابة وقراءة",
@@ -416,9 +420,10 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
       },
       {
         slug: "bac",
+        pricingKey: null,
         icon: "🎯",
         title: "منهجية البكالوريا",
-        price: "3,500 د.ج / شهر",
+        defaultPrice: "3,500 د.ج / شهر",
         features: [
           "تقنيات الحفظ للامتحانات",
           "إدارة الوقت خلال الامتحان",
@@ -434,9 +439,10 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
     courses: [
       {
         slug: "robotics",
+        pricingKey: null,
         icon: "🤖",
         title: "روبوتيك المبتدئين",
-        price: "3,500 د.ج / شهر",
+        defaultPrice: "3,500 د.ج / شهر",
         img: "course-robotics.jpg",
         features: [
           "مقدمة في الروبوتيك",
@@ -447,9 +453,10 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
       },
       {
         slug: "robotics",
+        pricingKey: "robotics",
         icon: "🏆",
         title: "الروبوتيك للأطفال",
-        price: "5,000 د.ج / شهر",
+        defaultPrice: "5,000 د.ج / شهر",
         img: "course-robotics.jpg",
         features: [
           "برمجة وتجميع روبوتات",
@@ -461,9 +468,10 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
       },
       {
         slug: "robotics",
+        pricingKey: null,
         icon: "💡",
         title: "روبوتيك متقدم",
-        price: "6,000 د.ج / شهر",
+        defaultPrice: "6,000 د.ج / شهر",
         img: "course-robotics.jpg",
         features: [
           "برمجة Python وArduino",
@@ -479,6 +487,7 @@ const TABS: { id: string; label: string; courses: CourseCard[] }[] = [
 function CoursesGrid() {
   const [activeTab, setActiveTab] = useState("adults");
   const currentTab = TABS.find((t) => t.id === activeTab)!;
+  const { data: siteContent } = useSiteContent();
 
   return (
     <section id="courses" className="py-20 bg-gray-50">
@@ -559,14 +568,23 @@ function CoursesGrid() {
                   </h3>
 
                   {/* Price */}
-                  <div className="text-center mb-6">
-                    <span className="text-3xl font-black text-primary">
-                      {course.price.split(" / ")[0]}
-                    </span>
-                    <span className="text-gray-400 text-sm mr-1">
-                      {" "}/ {course.price.split(" / ")[1]}
-                    </span>
-                  </div>
+                  {(() => {
+                    const apiPrice =
+                      course.pricingKey && siteContent?.pricing?.[course.pricingKey]
+                        ? siteContent.pricing[course.pricingKey].price
+                        : course.defaultPrice;
+                    const parts = apiPrice.split(" / ");
+                    return (
+                      <div className="text-center mb-6">
+                        <span className="text-3xl font-black text-primary">
+                          {parts[0]}
+                        </span>
+                        <span className="text-gray-400 text-sm mr-1">
+                          {parts[1] ? ` / ${parts[1]}` : ""}
+                        </span>
+                      </div>
+                    );
+                  })()}
 
                   {/* Features */}
                   <ul className="space-y-3 mb-8 flex-1">
@@ -675,7 +693,7 @@ function Testimonials() {
 }
 
 function FAQ() {
-  const { data } = useSiteContent();
+  const { data, isLoading } = useSiteContent();
   const faqItems = data?.faq ?? [];
 
   return (
@@ -691,16 +709,27 @@ function FAQ() {
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">الأسئلة الشائعة</h2>
         </motion.div>
 
-        <Accordion type="single" collapsible className="w-full">
-          {faqItems.map((item) => (
-            <AccordionItem key={item.id} value={item.id} className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
-              <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">{item.question}</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground pb-4">
-                {item.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="bg-white px-6 py-4 rounded-lg border shadow-sm">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Accordion type="single" collapsible className="w-full">
+            {faqItems.map((item) => (
+              <AccordionItem key={item.id} value={item.id} className="bg-white px-6 rounded-lg mb-4 border shadow-sm">
+                <AccordionTrigger className="text-lg font-semibold hover:text-primary py-4">{item.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
       </div>
     </section>
   );
@@ -892,7 +921,7 @@ function Registration() {
 }
 
 function Contact() {
-  const { data } = useSiteContent();
+  const { data, isLoading } = useSiteContent();
   const contact = data?.contact;
 
   const contactItems = [
@@ -935,22 +964,30 @@ function Contact() {
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          {contactItems.map((item, i) => (
-            <motion.div
-              key={i}
-              variants={fadeUpDelay(i * 0.15)}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className={`flex flex-col items-center p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-white ${item.glow}`}
-            >
-              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-4 shadow-lg`}>
-                {item.icon}
-              </div>
-              <h3 className="font-bold text-xl mb-2 text-gray-800">{item.title}</h3>
-              <p className="text-muted-foreground" dir={item.dir}>{item.info}</p>
-            </motion.div>
-          ))}
+          {isLoading
+            ? [...Array(3)].map((_, i) => (
+                <div key={i} className="flex flex-col items-center p-6 rounded-2xl border border-gray-100 shadow-md bg-white">
+                  <Skeleton className="w-16 h-16 rounded-2xl mb-4" />
+                  <Skeleton className="h-5 w-24 mb-2" />
+                  <Skeleton className="h-4 w-36" />
+                </div>
+              ))
+            : contactItems.map((item, i) => (
+                <motion.div
+                  key={i}
+                  variants={fadeUpDelay(i * 0.15)}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className={`flex flex-col items-center p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-white ${item.glow}`}
+                >
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-4 shadow-lg`}>
+                    {item.icon}
+                  </div>
+                  <h3 className="font-bold text-xl mb-2 text-gray-800">{item.title}</h3>
+                  <p className="text-muted-foreground" dir={item.dir}>{item.info}</p>
+                </motion.div>
+              ))}
         </div>
       </div>
     </section>

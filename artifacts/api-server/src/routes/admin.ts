@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { eq } from "drizzle-orm";
 import { db, siteSettingsTable } from "@workspace/db";
-import { contentRouter, DEFAULT_CONTENT, type SiteContent } from "./content";
+import { getContent, type SiteContent } from "./content";
 
 const router = Router();
 
@@ -40,21 +40,8 @@ router.post("/admin/login", (req, res) => {
 });
 
 router.get("/admin/content", requireAdmin, async (_req, res) => {
-  const [row] = await db
-    .select()
-    .from(siteSettingsTable)
-    .where(eq(siteSettingsTable.key, CONTENT_KEY));
-
-  if (!row) {
-    res.json(DEFAULT_CONTENT);
-    return;
-  }
-
-  try {
-    res.json(JSON.parse(row.value) as SiteContent);
-  } catch {
-    res.json(DEFAULT_CONTENT);
-  }
+  const content = await getContent();
+  res.json(content);
 });
 
 router.put("/admin/content", requireAdmin, async (req, res) => {

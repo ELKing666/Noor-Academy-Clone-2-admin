@@ -1,6 +1,7 @@
 import { useParams, Link } from "wouter";
 import { motion } from "framer-motion";
 import { useSiteContent } from "@/hooks/use-site-content";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Topic {
   num: string;
@@ -179,7 +180,7 @@ const COURSES: Record<string, CourseData> = {
 export default function CoursePage() {
   const params = useParams<{ slug: string }>();
   const course = COURSES[params.slug ?? ""];
-  const { data: siteContent } = useSiteContent();
+  const { data: siteContent, isLoading: isPricingLoading } = useSiteContent();
 
   if (!course) {
     return (
@@ -335,8 +336,17 @@ export default function CoursePage() {
 
           <div className="bg-white/10 p-8 rounded-[2rem] border border-white/20">
             <h3 className="text-2xl font-bold mb-4">التسجيل والأسعار</h3>
-            <div className="text-4xl font-bold text-amber-400 mb-2">{price}</div>
-            <p className="text-white/60 mb-8 text-sm italic">{priceNote}</p>
+            {isPricingLoading ? (
+              <>
+                <Skeleton className="h-10 w-48 mb-2 bg-white/20" />
+                <Skeleton className="h-4 w-64 mb-8 bg-white/10" />
+              </>
+            ) : (
+              <>
+                <div className="text-4xl font-bold text-amber-400 mb-2">{price}</div>
+                <p className="text-white/60 mb-8 text-sm italic">{priceNote}</p>
+              </>
+            )}
             <a
               href={`${base}/#registration`}
               className="block w-full bg-amber-400 text-gray-900 text-center py-4 rounded-2xl font-bold text-lg hover:bg-amber-300 transition-all"

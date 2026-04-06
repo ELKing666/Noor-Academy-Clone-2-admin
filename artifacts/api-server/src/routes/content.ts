@@ -93,6 +93,11 @@ async function getContent(): Promise<SiteContent> {
     .where(eq(siteSettingsTable.key, CONTENT_KEY));
 
   if (!row) {
+    const value = JSON.stringify(DEFAULT_CONTENT);
+    await db
+      .insert(siteSettingsTable)
+      .values({ key: CONTENT_KEY, value })
+      .onConflictDoNothing();
     return DEFAULT_CONTENT;
   }
 
