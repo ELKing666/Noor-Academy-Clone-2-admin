@@ -698,7 +698,7 @@ function Contact() {
     {
       icon: <Phone size={26} className="text-white" />,
       title: "الهاتف",
-      info: contact?.phone ?? "0770 764 200 / 0770 767 750 / 0550 686 498",
+      info: contact?.phone ?? "0770 764 200\n0770 767 750\n0550 686 498",
       dir: "ltr" as const,
       gradient: "from-blue-500 to-blue-700",
       glow: "hover:shadow-blue-400/30",
@@ -755,7 +755,7 @@ function Contact() {
                     {item.icon}
                   </div>
                   <h3 className="font-bold text-xl mb-2 text-gray-800">{item.title}</h3>
-                  <p className="text-muted-foreground" dir={item.dir}>{item.info}</p>
+                  <p className="text-muted-foreground whitespace-pre-line" dir={item.dir}>{item.info}</p>
                 </motion.div>
               ))}
         </div>
