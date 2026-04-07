@@ -513,47 +513,33 @@ function Testimonials() {
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">آراء الطلاب وأولياء الأمور</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { name: "أحمد بن علي", role: "ولي أمر طالب", quote: "بفضل الله ثم جهود أساتذة نور أكاديمي، تمكن ابني من الحصول على معدل ممتاز في البكالوريا." },
-            { name: "سعاد م.", role: "طالبة لغة إنجليزية", quote: "دورة الإنجليزية كانت رائعة، تحسن مستواي بشكل ملحوظ خلال أشهر قليلة والأساتذة متعاونون جداً." },
-            { name: "عمر خ.", role: "طالب بكالوريا", quote: "المتابعة اليومية والتمارين المكثفة هنا كانت السر وراء نجاحي. أنصح الجميع بالتسجيل." }
-          ].map((t, i) => (
-            <motion.div
-              key={i}
-              variants={fadeUpDelay(i * 0.15)}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+            <iframe
+              src="https://drive.google.com/file/d/1FZWLh56OimAPSN0bBCCxd-CP6Jgk3Sgx/preview"
+              className="w-full"
+              style={{ height: "600px" }}
+              allow="autoplay"
+              title="شهادات الطلاب وأولياء الأمور"
+            />
+          </div>
+          <div className="text-center mt-6">
+            <a
+              href="https://drive.google.com/file/d/1FZWLh56OimAPSN0bBCCxd-CP6Jgk3Sgx/view"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-xl shadow transition-all"
             >
-              <Card className="relative border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden bg-white">
-                {/* Gradient left accent */}
-                <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 to-primary rounded-r-full" />
-                {/* Big decorative quotation mark */}
-                <div className="absolute top-3 left-4 text-7xl font-serif text-primary/10 leading-none select-none pointer-events-none">"</div>
-                <CardContent className="pt-8 pb-6 px-6">
-                  <div className="flex text-amber-400 mb-4 gap-0.5">
-                    {[...Array(5)].map((_, j) => (
-                      <svg key={j} className="w-5 h-5 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <p className="text-gray-600 italic mb-6 leading-relaxed">"{t.quote}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-red-700 flex items-center justify-center text-white font-bold text-sm shadow">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-bold text-primary">{t.name}</div>
-                      <div className="text-xs text-muted-foreground">{t.role}</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+              عرض الشهادات كاملة
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
