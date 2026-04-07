@@ -238,7 +238,7 @@ function About() {
     },
     {
       icon: <GraduationCap className="w-7 h-7 text-white" />,
-      target: 20,
+      target: 50,
       suffix: "+",
       label: "المدربين الخبراء",
       gradient: "from-emerald-500 to-emerald-700",
