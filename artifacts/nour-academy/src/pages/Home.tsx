@@ -237,6 +237,14 @@ function About() {
       glow: "shadow-blue-400/40",
     },
     {
+      icon: <GraduationCap className="w-7 h-7 text-white" />,
+      target: 20,
+      suffix: "+",
+      label: "المدربين الخبراء",
+      gradient: "from-emerald-500 to-emerald-700",
+      glow: "shadow-emerald-400/40",
+    },
+    {
       icon: <Award className="w-7 h-7 text-white" />,
       target: 10,
       suffix: "+",
