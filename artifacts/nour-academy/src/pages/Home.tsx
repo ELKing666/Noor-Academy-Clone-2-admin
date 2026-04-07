@@ -325,39 +325,6 @@ function About() {
           ))}
         </div>
 
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h3 className="text-2xl md:text-3xl font-bold text-primary mb-8">فريقنا التعليمي</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { name: "أ. كريمة بن عمر", role: "مديرة الأكاديمية", subject: "أستاذة رياضيات", initials: "ك.ب", gradient: "from-blue-500 to-indigo-600" },
-              { name: "أ. يوسف حداد", role: "أستاذ علوم", subject: "فيزياء وعلوم — بكالوريا", initials: "ي.ح", gradient: "from-emerald-500 to-teal-600" },
-              { name: "أ. سارة مزياني", role: "أستاذة لغة إنجليزية", subject: "جميع المستويات", initials: "س.م", gradient: "from-amber-500 to-orange-500" },
-              { name: "م. أمين بلقاسم", role: "مدرب تقني", subject: "روبوتيك وبرمجة للأطفال", initials: "أ.ب", gradient: "from-primary to-red-700" },
-            ].map((teacher, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUpDelay(i * 0.1)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="flex flex-col items-center group"
-              >
-                <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${teacher.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300 ring-4 ring-white`}>
-                  <span className="text-white text-xl font-black">{teacher.initials}</span>
-                </div>
-                <h4 className="text-xl font-bold text-primary">{teacher.name}</h4>
-                <p className="text-sm font-semibold text-gray-600 mt-1">{teacher.role}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{teacher.subject}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </section>
   );
