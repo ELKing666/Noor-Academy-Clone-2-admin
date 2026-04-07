@@ -230,7 +230,7 @@ function About() {
   const statCards = [
     {
       icon: <Users className="w-7 h-7 text-white" />,
-      target: 500,
+      target: 1000,
       suffix: "+",
       label: "طالب وطالبة",
       gradient: "from-blue-500 to-blue-700",
