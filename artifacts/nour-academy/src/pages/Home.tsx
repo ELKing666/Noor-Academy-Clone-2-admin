@@ -130,7 +130,6 @@ function Navbar() {
           <a href="#testimonials" className="hover:text-amber-400 transition-colors">آراء الطلاب</a>
           <a href="#faq" className="hover:text-amber-400 transition-colors">الأسئلة الشائعة</a>
           <a href="#branches" className="hover:text-amber-400 transition-colors">فروعنا</a>
-          <a href="#contact" className="hover:text-amber-400 transition-colors">تواصل معنا</a>
           <Button
             asChild
             className="bg-amber-400 text-primary hover:bg-amber-500 font-bold"
