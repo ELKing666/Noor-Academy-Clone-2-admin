@@ -53,13 +53,61 @@ create table if not exists contact_info (
   updated_at timestamptz not null default now()
 );
 
--- 2. DISABLE ROW LEVEL SECURITY (allow anonymous read/write via anon key)
+-- 2. ROW LEVEL SECURITY POLICIES
+-- Public tables: anon can read (SELECT) all rows.
+-- Students: anon can only INSERT (submit registration) — cannot read registrations.
+-- Admin writes (course/content edits) use the same anon key, which is a known
+-- tradeoff of this frontend-only architecture. Protect your anon key carefully.
 
-alter table courses disable row level security;
-alter table students disable row level security;
-alter table course_pricing disable row level security;
-alter table faq_items disable row level security;
-alter table contact_info disable row level security;
+alter table courses enable row level security;
+alter table students enable row level security;
+alter table course_pricing enable row level security;
+alter table faq_items enable row level security;
+alter table contact_info enable row level security;
+
+-- Courses: public read + full write (needed for admin panel without a backend)
+drop policy if exists "courses_select" on courses;
+create policy "courses_select" on courses for select using (true);
+drop policy if exists "courses_insert" on courses;
+create policy "courses_insert" on courses for insert with check (true);
+drop policy if exists "courses_update" on courses;
+create policy "courses_update" on courses for update using (true);
+drop policy if exists "courses_delete" on courses;
+create policy "courses_delete" on courses for delete using (true);
+
+-- Students: anon can INSERT only — nobody can read student registrations via anon key
+drop policy if exists "students_insert" on students;
+create policy "students_insert" on students for insert with check (true);
+
+-- Course pricing: public read + full write (for admin panel)
+drop policy if exists "course_pricing_select" on course_pricing;
+create policy "course_pricing_select" on course_pricing for select using (true);
+drop policy if exists "course_pricing_insert" on course_pricing;
+create policy "course_pricing_insert" on course_pricing for insert with check (true);
+drop policy if exists "course_pricing_update" on course_pricing;
+create policy "course_pricing_update" on course_pricing for update using (true);
+drop policy if exists "course_pricing_delete" on course_pricing;
+create policy "course_pricing_delete" on course_pricing for delete using (true);
+
+-- FAQ items: public read + full write (for admin panel)
+drop policy if exists "faq_items_select" on faq_items;
+create policy "faq_items_select" on faq_items for select using (true);
+drop policy if exists "faq_items_insert" on faq_items;
+create policy "faq_items_insert" on faq_items for insert with check (true);
+drop policy if exists "faq_items_update" on faq_items;
+create policy "faq_items_update" on faq_items for update using (true);
+drop policy if exists "faq_items_delete" on faq_items;
+create policy "faq_items_delete" on faq_items for delete using (true);
+
+-- Contact info: public read + full write (for admin panel)
+drop policy if exists "contact_info_select" on contact_info;
+create policy "contact_info_select" on contact_info for select using (true);
+drop policy if exists "contact_info_insert" on contact_info;
+create policy "contact_info_insert" on contact_info for insert with check (true);
+drop policy if exists "contact_info_update" on contact_info;
+create policy "contact_info_update" on contact_info for update using (true);
+drop policy if exists "contact_info_delete" on contact_info;
+create policy "contact_info_delete" on contact_info for delete using (true);
 
 -- 3. SEED DEFAULT DATA
 
