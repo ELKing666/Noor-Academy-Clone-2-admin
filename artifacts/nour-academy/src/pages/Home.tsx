@@ -949,7 +949,7 @@ function Footer() {
             <h3 className="text-xl font-bold mb-6 text-amber-400">اتصل بنا</h3>
             <ul className="space-y-3 text-white/80">
               <li className="flex items-center gap-2"><MapPin size={18} className="text-amber-400" /> {contact?.address ?? "شلف، الجزائر"}</li>
-              <li className="flex items-center gap-2"><Phone size={18} className="text-amber-400" /> <span dir="ltr">{contact?.phone ?? "0555 12 34 56"}</span></li>
+              <li className="flex items-start gap-2"><Phone size={18} className="text-amber-400 mt-1 shrink-0" /> <span dir="ltr" className="whitespace-pre-line">{contact?.phone ?? "0770 764 200\n0770 767 750\n0550 686 498"}</span></li>
               <li className="flex items-center gap-2"><Mail size={18} className="text-amber-400" /> {contact?.email ?? "contact@nour-academy.dz"}</li>
             </ul>
           </div>
