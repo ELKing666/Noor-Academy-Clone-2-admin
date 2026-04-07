@@ -761,7 +761,7 @@ function Contact() {
         </div>
 
         {/* Contact Form + Social Links side by side */}
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-end gap-6 justify-center">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-end gap-12 justify-center">
 
         {/* Social Links */}
         <motion.div
