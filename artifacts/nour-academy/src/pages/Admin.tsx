@@ -585,7 +585,7 @@ function CourseFormModal({
           <div className={sectionClass}>
             <div className="flex items-center justify-between mb-2">
               <p className={sectionTitle}>الإحصائيات (stats)</p>
-              <button type="button" onClick={addStat} className="text-xs text-[#c0001a] font-bold hover:underline">+ إضافة</button>
+              <button type="button" onClick={addStat} disabled={stats.length >= 4} className="text-xs text-[#c0001a] font-bold hover:underline disabled:opacity-40 disabled:cursor-not-allowed">+ إضافة</button>
             </div>
             {stats.length === 0 && <p className="text-xs text-gray-400 text-center py-2">لا توجد إحصائيات</p>}
             {stats.map((s, i) => (

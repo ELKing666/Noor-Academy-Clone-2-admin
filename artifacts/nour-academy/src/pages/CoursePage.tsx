@@ -3,6 +3,112 @@ import { motion } from "framer-motion";
 import { useCourse } from "@/hooks/use-courses";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Hardcoded rich content for legacy courses until DB migration is complete
+const LEGACY_STATS: Record<string, Array<{ value: string; label: string }>> = {
+  bac: [
+    { value: "📚", label: "شعب علمية وأدبية" },
+    { value: "15+", label: "سنة خبرة" },
+    { value: "الكبار", label: "الفئة" },
+    { value: "الأكثر طلباً", label: "التميز" },
+  ],
+  english: [
+    { value: "🇬🇧", label: "اللغة الإنجليزية" },
+    { value: "4+", label: "مستويات" },
+    { value: "الكبار", label: "الفئة" },
+    { value: "دورة متميزة", label: "التميز" },
+  ],
+  robotics: [
+    { value: "🤖", label: "الروبوتيك" },
+    { value: "8-14", label: "الفئة العمرية" },
+    { value: "الأطفال", label: "الفئة" },
+    { value: "مشاريع عملية", label: "المميز" },
+  ],
+};
+
+const LEGACY_TOPICS: Record<string, Array<{ num: string; title: string; desc: string; tags: string[] }>> = {
+  bac: [
+    {
+      num: "01",
+      title: "الرياضيات والفيزياء",
+      desc: "تغطية شاملة لمناهج الرياضيات والفيزياء مع تمارين تطبيقية مكثفة.",
+      tags: ["رياضيات", "فيزياء", "تمارين"],
+    },
+    {
+      num: "02",
+      title: "العلوم الطبيعية",
+      desc: "دراسة معمقة في علم الأحياء والكيمياء وفق المنهج الرسمي.",
+      tags: ["أحياء", "كيمياء", "بيولوجيا"],
+    },
+    {
+      num: "03",
+      title: "اختبارات تجريبية",
+      desc: "اختبارات دورية تحاكي امتحانات البكالوريا الرسمية مع التصحيح التفصيلي.",
+      tags: ["اختبارات", "بكالوريا", "تصحيح"],
+    },
+  ],
+  english: [
+    {
+      num: "01",
+      title: "المحادثة والنطق",
+      desc: "جلسات محادثة مكثفة مع مدرسين متخصصين لتطوير الطلاقة اللفظية.",
+      tags: ["محادثة", "نطق", "طلاقة"],
+    },
+    {
+      num: "02",
+      title: "الكتابة والقراءة",
+      desc: "تطوير مهارات الكتابة الأكاديمية والإبداعية مع قراءة نصوص متنوعة.",
+      tags: ["كتابة", "قراءة", "نصوص"],
+    },
+    {
+      num: "03",
+      title: "قواعد اللغة",
+      desc: "إتقان قواعد اللغة الإنجليزية من خلال شرح مبسط وتطبيقات يومية.",
+      tags: ["grammar", "قواعد", "تطبيق"],
+    },
+  ],
+  robotics: [
+    {
+      num: "01",
+      title: "أساسيات البرمجة",
+      desc: "تعلم البرمجة المرئية عبر Scratch وتطبيقات تفاعلية مسلية.",
+      tags: ["Scratch", "برمجة مرئية", "تفاعلي"],
+    },
+    {
+      num: "02",
+      title: "تجميع الروبوتات",
+      desc: "بناء روبوتات حقيقية وتشغيلها خطوة بخطوة مع إشراف متخصص.",
+      tags: ["روبوت", "تجميع", "ميكانيك"],
+    },
+    {
+      num: "03",
+      title: "مشاريع عملية",
+      desc: "تنفيذ مشروع متكامل في نهاية كل وحدة لتعزيز المهارات المكتسبة.",
+      tags: ["مشروع", "إبداع", "تحدي"],
+    },
+  ],
+};
+
+const LEGACY_FOR_WHOM: Record<string, string[]> = {
+  bac: [
+    "طلاب السنة الثالثة ثانوي (البكالوريا)",
+    "الراغبون في تحسين معدلاتهم في المواد العلمية",
+    "من يحتاج إلى متابعة فردية مكثفة قبل الامتحانات",
+    "الطلاب الذين يعانون من صعوبات في الفهم داخل القسم",
+  ],
+  english: [
+    "المبتدئون الراغبون في تعلم اللغة الإنجليزية من الصفر",
+    "الطلاب الذين يحتاجون إلى تحسين مستواهم للمدرسة أو الجامعة",
+    "المهنيون الراغبون في تطوير مهاراتهم للعمل",
+    "من يرغب في الحصول على شهادات دولية معترف بها",
+  ],
+  robotics: [
+    "الأطفال بين 8 و14 سنة المهتمون بالتكنولوجيا",
+    "من يحب التجارب العلمية والبناء اليدوي",
+    "الطلاب الراغبون في تعلم البرمجة بطريقة ممتعة",
+    "الموهوبون الذين يريدون تطوير تفكيرهم الإبداعي",
+  ],
+};
+
 export default function CoursePage() {
   const params = useParams<{ slug: string }>();
   const slug = params.slug ?? "";
@@ -58,11 +164,17 @@ export default function CoursePage() {
     : [];
 
   const stats =
-    course.stats && course.stats.length > 0 ? course.stats : defaultStats;
+    course.stats && course.stats.length > 0
+      ? course.stats
+      : LEGACY_STATS[course.id] ?? defaultStats;
   const topics =
-    course.topics && course.topics.length > 0 ? course.topics : null;
+    course.topics && course.topics.length > 0
+      ? course.topics
+      : LEGACY_TOPICS[course.id] ?? null;
   const forWhom =
-    course.for_whom && course.for_whom.length > 0 ? course.for_whom : null;
+    course.for_whom && course.for_whom.length > 0
+      ? course.for_whom
+      : LEGACY_FOR_WHOM[course.id] ?? null;
 
   const price = course.price;
 

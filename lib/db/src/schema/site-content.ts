@@ -1,4 +1,4 @@
-import { pgTable, text, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
 
 export const coursePricingTable = pgTable("course_pricing", {
   course_slug: text("course_slug").primaryKey(),
@@ -35,9 +35,9 @@ export const coursesTable = pgTable("courses", {
   is_featured: boolean("is_featured").notNull().default(false),
   sort_order: integer("sort_order").notNull().default(0),
   badge: text("badge").default(""),
-  stats: json("stats").$type<Array<{ value: string; label: string }>>(),
-  topics: json("topics").$type<Array<{ num: string; title: string; desc: string; tags: string[] }>>(),
-  for_whom: json("for_whom").$type<string[]>(),
+  stats: jsonb("stats").$type<Array<{ value: string; label: string }>>(),
+  topics: jsonb("topics").$type<Array<{ num: string; title: string; desc: string; tags: string[] }>>(),
+  for_whom: jsonb("for_whom").$type<string[]>(),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
