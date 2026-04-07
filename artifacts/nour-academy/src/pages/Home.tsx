@@ -43,8 +43,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useMutation } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useRegisterStudent } from "@workspace/api-client-react";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { useCourses } from "@/hooks/use-courses";
 
@@ -672,18 +671,7 @@ function FAQ() {
 
 function Registration() {
   const [isSuccess, setIsSuccess] = useState(false);
-  const registerMutation = useMutation<void, Error, RegisterFormValues>({
-    mutationFn: async (values) => {
-      const { error } = await supabase.from("students").insert({
-        name: values.name,
-        phone: values.phone,
-        course: values.course,
-        payment_method: values.payment_method,
-        status: "pending",
-      });
-      if (error) throw new Error(error.message);
-    },
-  });
+  const registerMutation = useRegisterStudent();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -696,11 +684,14 @@ function Registration() {
   });
 
   function onSubmit(values: RegisterFormValues) {
-    registerMutation.mutate(values, {
-      onSuccess: () => {
-        setIsSuccess(true);
-      },
-    });
+    registerMutation.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          setIsSuccess(true);
+        },
+      }
+    );
   }
 
   return (

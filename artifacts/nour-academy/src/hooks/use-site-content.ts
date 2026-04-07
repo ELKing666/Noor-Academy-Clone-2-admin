@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 
 export interface FaqItem {
   id: string;
@@ -85,44 +84,19 @@ export const DEFAULT_CONTENT: SiteContent = {
 };
 
 async function fetchContent(): Promise<SiteContent> {
-  const [faqResult, contactResult, pricingResult] = await Promise.all([
-    supabase
-      .from("faq_items")
-      .select("*")
-      .order("sort_order", { ascending: true }),
-    supabase.from("contact_info").select("*").eq("id", "main").single(),
-    supabase.from("course_pricing").select("*"),
-  ]);
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const res = await fetch(`${base}/api/content`);
+  if (!res.ok) throw new Error("fetch failed");
+  return res.json();
+}
 
-  if (faqResult.error) throw new Error(faqResult.error.message);
-  if (contactResult.error) throw new Error(contactResult.error.message);
-  if (pricingResult.error) throw new Error(pricingResult.error.message);
-
-  const pricingMap: Record<string, CoursePricing> = {};
-  for (const row of pricingResult.data ?? []) {
-    pricingMap[row.course_slug] = {
-      price: row.price,
-      priceNote: row.price_note,
-    };
-  }
-
-  return {
-    faq: (faqResult.data ?? []).map((row) => ({
-      id: row.id,
-      question: row.question,
-      answer: row.answer,
-    })),
-    contact: {
-      phone: contactResult.data.phone,
-      email: contactResult.data.email,
-      address: contactResult.data.address,
-    },
-    pricing: {
-      bac: pricingMap["bac"] ?? DEFAULT_CONTENT.pricing.bac,
-      english: pricingMap["english"] ?? DEFAULT_CONTENT.pricing.english,
-      robotics: pricingMap["robotics"] ?? DEFAULT_CONTENT.pricing.robotics,
-    },
-  };
+async function fetchAdminContent(password: string): Promise<SiteContent> {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const res = await fetch(`${base}/api/admin/content`, {
+    headers: { Authorization: `Bearer ${password}` },
+  });
+  if (!res.ok) throw new Error("fetch failed");
+  return res.json();
 }
 
 export function useSiteContent() {
@@ -138,10 +112,11 @@ export function useSiteContent() {
   };
 }
 
-export function useAdminContent(_password: string) {
+export function useAdminContent(password: string) {
   return useQuery<SiteContent>({
-    queryKey: ["site-content"],
-    queryFn: fetchContent,
+    queryKey: ["admin-content", password],
+    queryFn: () => fetchAdminContent(password),
+    enabled: !!password,
     staleTime: 0,
     retry: false,
   });
@@ -150,54 +125,27 @@ export function useAdminContent(_password: string) {
 export function useUpdateSiteContent() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, { content: SiteContent }>({
-    mutationFn: async ({ content }) => {
-      const now = new Date().toISOString();
-
-      const { error: contactError } = await supabase
-        .from("contact_info")
-        .upsert({
-          id: "main",
-          phone: content.contact.phone,
-          email: content.contact.email,
-          address: content.contact.address,
-          updated_at: now,
-        });
-      if (contactError) throw new Error(contactError.message);
-
-      const pricingRows = Object.entries(content.pricing).map(([slug, p]) => ({
-        course_slug: slug,
-        price: p.price,
-        price_note: p.priceNote,
-        updated_at: now,
-      }));
-      const { error: pricingError } = await supabase
-        .from("course_pricing")
-        .upsert(pricingRows);
-      if (pricingError) throw new Error(pricingError.message);
-
-      const { error: deleteError } = await supabase
-        .from("faq_items")
-        .delete()
-        .neq("id", "___never___");
-      if (deleteError) throw new Error(deleteError.message);
-
-      if (content.faq.length > 0) {
-        const faqRows = content.faq.map((item, i) => ({
-          id: item.id,
-          question: item.question,
-          answer: item.answer,
-          sort_order: i,
-          updated_at: now,
-        }));
-        const { error: faqError } = await supabase
-          .from("faq_items")
-          .insert(faqRows);
-        if (faqError) throw new Error(faqError.message);
+  return useMutation<void, Error, { password: string; content: SiteContent }>({
+    mutationFn: async ({ password, content }) => {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${base}/api/admin/content`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${password}`,
+        },
+        body: JSON.stringify(content),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          (data as { error?: string }).error || "فشل الحفظ",
+        );
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, { password }) => {
       queryClient.invalidateQueries({ queryKey: ["site-content"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-content", password] });
     },
   });
 }

@@ -20,18 +20,29 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-    if (password && password === adminPassword) {
-      sessionStorage.setItem(SESSION_KEY, password);
-      onLogin(password);
-    } else {
-      setError("كلمة المرور غير صحيحة");
+    try {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${base}/api/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        sessionStorage.setItem(SESSION_KEY, password);
+        onLogin(password);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError((data as { error?: string }).error || "كلمة المرور غير صحيحة");
+      }
+    } catch {
+      setError("تعذّر الاتصال بالخادم");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -536,7 +547,7 @@ function CoursesTab({ password }: { password: string }) {
     setMutError("");
     if (modal?.mode === "create") {
       createCourse.mutate(
-        course,
+        { password, course },
         {
           onSuccess: () => {
             setModal(null);
@@ -549,7 +560,7 @@ function CoursesTab({ password }: { password: string }) {
       const editModal = modal as { mode: "edit"; course: Course };
       const { id: _id, ...rest } = course;
       updateCourse.mutate(
-        { id: editModal.course.id, course: rest },
+        { password, id: editModal.course.id, course: rest },
         {
           onSuccess: () => {
             setModal(null);
@@ -563,7 +574,7 @@ function CoursesTab({ password }: { password: string }) {
 
   function handleDelete(id: string) {
     deleteCourse.mutate(
-      { id },
+      { password, id },
       {
         onSuccess: () => {
           setDeleteId(null);
@@ -731,7 +742,7 @@ function AdminPanel({ password, onLogout }: { password: string; onLogout: () => 
   async function handleSave() {
     if (!localContent) return;
     updateMutation.mutate(
-      { content: localContent },
+      { password, content: localContent },
       {
         onSuccess: () => {
           toast({
