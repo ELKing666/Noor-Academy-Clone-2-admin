@@ -698,7 +698,7 @@ function Contact() {
     {
       icon: <Phone size={26} className="text-white" />,
       title: "الهاتف",
-      info: contact?.phone ?? "0555 12 34 56",
+      info: contact?.phone ?? "0770 764 200 / 0770 767 750 / 0550 686 498",
       dir: "ltr" as const,
       gradient: "from-blue-500 to-blue-700",
       glow: "hover:shadow-blue-400/30",
