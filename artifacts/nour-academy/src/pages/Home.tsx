@@ -706,7 +706,7 @@ function Contact() {
     {
       icon: <Mail size={26} className="text-white" />,
       title: "البريد الإلكتروني",
-      info: contact?.email ?? "contact@nour-academy.dz",
+      info: contact?.email ?? "nooracademyalgeria@gmail.com",
       dir: undefined,
       gradient: "from-primary to-red-700",
       glow: "hover:shadow-red-400/30",
