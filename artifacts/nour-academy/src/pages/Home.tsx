@@ -993,7 +993,7 @@ export default function Home() {
       
       {/* WhatsApp Button */}
       <a
-        href="https://wa.me/213555123456"
+        href="https://api.whatsapp.com/send?phone=213770764200&text=%D9%84%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 left-6 w-14 h-14 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:shadow-xl transition-all z-50"
