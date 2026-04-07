@@ -1,5 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+export interface CourseStat { value: string; label: string; }
+export interface CourseTopic { num: string; title: string; desc: string; tags: string[]; }
+
 export interface Course {
   id: string;
   title: string;
@@ -11,6 +14,10 @@ export interface Course {
   category: "adults" | "kids";
   is_featured: boolean;
   sort_order: number;
+  badge: string | null;
+  stats: CourseStat[] | null;
+  topics: CourseTopic[] | null;
+  for_whom: string[] | null;
   created_at: string;
   updated_at: string;
 }

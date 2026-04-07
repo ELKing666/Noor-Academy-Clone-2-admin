@@ -4,6 +4,9 @@ import { db, coursesTable } from "@workspace/db";
 
 const router = Router();
 
+export interface CourseStat { value: string; label: string; }
+export interface CourseTopic { num: string; title: string; desc: string; tags: string[]; }
+
 export interface CoursePayload {
   id: string;
   title: string;
@@ -15,6 +18,10 @@ export interface CoursePayload {
   category: "adults" | "kids";
   is_featured: boolean;
   sort_order: number;
+  badge?: string;
+  stats?: CourseStat[];
+  topics?: CourseTopic[];
+  for_whom?: string[];
 }
 
 const DEFAULT_COURSES: CoursePayload[] = [
@@ -133,6 +140,10 @@ router.post("/admin/courses", requireAdmin, async (req, res) => {
       category: body.category ?? "adults",
       is_featured: body.is_featured ?? false,
       sort_order: body.sort_order ?? 0,
+      badge: body.badge ?? "",
+      stats: body.stats ?? [],
+      topics: body.topics ?? [],
+      for_whom: body.for_whom ?? [],
     })
     .returning();
 
@@ -154,6 +165,10 @@ router.put("/admin/courses/:id", requireAdmin, async (req, res) => {
       category: body.category,
       is_featured: body.is_featured,
       sort_order: body.sort_order,
+      badge: body.badge,
+      stats: body.stats,
+      topics: body.topics,
+      for_whom: body.for_whom,
       updated_at: new Date(),
     })
     .where(eq(coursesTable.id, String(req.params.id)))

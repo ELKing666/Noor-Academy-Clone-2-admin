@@ -3,146 +3,6 @@ import { motion } from "framer-motion";
 import { useCourse } from "@/hooks/use-courses";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Topic {
-  num: string;
-  title: string;
-  desc: string;
-  tags: string[];
-}
-
-interface CourseDetail {
-  badge: string;
-  stats: { value: string; label: string }[];
-  topics: Topic[];
-  forWhom: string[];
-}
-
-const COURSE_DETAILS: Record<string, CourseDetail> = {
-  bac: {
-    badge: "شعبة العلوم والتقني رياضي",
-    stats: [
-      { value: "السنة النهائية", label: "الصف الدراسي" },
-      { value: "3 مواد رئيسية", label: "مواد البرنامج" },
-      { value: "6 ساعة/أسبوع", label: "تدريب مكثف" },
-      { value: "تدريب تفاعلي", label: "منهجية التعلم" },
-    ],
-    topics: [
-      {
-        num: "01",
-        title: "الرياضيات",
-        desc: "تغطية كاملة لمنهج الرياضيات بشعبتيه — من التحليل والجبر إلى الإحصاء والهندسة — مع حل مستفيض لامتحانات السنوات السابقة.",
-        tags: ["التحليل", "الجبر", "الهندسة", "الإحصاء"],
-      },
-      {
-        num: "02",
-        title: "الفيزياء والكيمياء",
-        desc: "فهم عميق للمفاهيم الفيزيائية والكيميائية مع تمارين تطبيقية وتجارب عملية تساعد الطالب على استيعاب الدرس بسهولة.",
-        tags: ["الميكانيك", "الكهرباء", "الكيمياء العضوية", "الضوء"],
-      },
-      {
-        num: "03",
-        title: "العلوم الطبيعية",
-        desc: "شرح وافٍ لمحاور بيولوجيا وجيولوجيا البكالوريا، مع مراجعة شاملة للوحدات الأكثر تكراراً في الامتحانات الرسمية.",
-        tags: ["البيولوجيا", "الجيولوجيا", "التشريح", "الخلية"],
-      },
-      {
-        num: "04",
-        title: "منهجية الامتحان",
-        desc: "تدريب مكثف على إدارة الوقت، وتقنيات الإجابة الصحيحة، ومحاكاة ظروف الامتحان الحقيقي لتعزيز الثقة بالنفس.",
-        tags: ["إدارة الوقت", "نمذجة الامتحانات", "ثقة بالنفس"],
-      },
-    ],
-    forWhom: [
-      "طلاب السنة النهائية ثانوي (شعبة العلوم أو التقني رياضي).",
-      "من يريد تعزيز نتيجته ورفع معدله في البكالوريا.",
-      "من يعاني من ثغرات في مادة الرياضيات أو الفيزياء.",
-      "الطلاب الراغبون في تكملة دراستهم في كليات العلوم أو الهندسة.",
-    ],
-  },
-  english: {
-    badge: "من مبتدئ إلى متقدم",
-    stats: [
-      { value: "جميع الأعمار", label: "الفئة المستهدفة" },
-      { value: "4 مستويات", label: "مسارات التعلم" },
-      { value: "4 ساعة/أسبوع", label: "تدريب منتظم" },
-      { value: "محادثة + كتابة", label: "منهجية التعلم" },
-    ],
-    topics: [
-      {
-        num: "01",
-        title: "المحادثة والاستماع",
-        desc: "تطوير مهارة الكلام بثقة والفهم الجيد للأصوات الإنجليزية، من خلال حوارات حية وتمثيل أدوار وتسجيلات صوتية أصيلة.",
-        tags: ["المحادثة", "النطق", "الاستماع", "الحوار"],
-      },
-      {
-        num: "02",
-        title: "القراءة والكتابة",
-        desc: "توسيع المخزون اللغوي وتحسين أسلوب الكتابة، بدءاً من الجملة البسيطة وصولاً إلى كتابة مقالات ورسائل احترافية.",
-        tags: ["الكتابة الإبداعية", "القراءة الموسعة", "المفردات"],
-      },
-      {
-        num: "03",
-        title: "القواعد اللغوية",
-        desc: "تغطية شاملة لقواعد اللغة الإنجليزية (Grammar) بأسلوب مبسط وعملي، مع تطبيقات يومية تثبّت المعلومة.",
-        tags: ["الأزمنة", "الأفعال", "الجملة المركبة", "التراكيب"],
-      },
-      {
-        num: "04",
-        title: "الإعداد للشهادات",
-        desc: "تحضير للطلاب الراغبين في اجتياز اختبارات الكفاءة كـ IELTS وDELF، مع تقييم دوري وخطة شخصية مخصصة لكل طالب.",
-        tags: ["IELTS", "محاكاة اختبارات", "تحليل الأداء"],
-      },
-    ],
-    forWhom: [
-      "الطلاب من جميع المراحل الذين يريدون تحسين نتائجهم المدرسية.",
-      "المهنيون الراغبون في اللغة الإنجليزية للعمل أو السفر.",
-      "من يريد الاستعداد لاختبارات الكفاءة الدولية.",
-      "الأطفال والمبتدئون الذين يبدأون من الصفر.",
-    ],
-  },
-  robotics: {
-    badge: "للأعمار 8-14 سنة",
-    stats: [
-      { value: "8-14 سنة", label: "الفئة العمرية" },
-      { value: "4 وحدات", label: "وحدات البرنامج" },
-      { value: "3 ساعة/أسبوع", label: "جلسات عملية" },
-      { value: "تعلم بالممارسة", label: "منهجية التعلم" },
-    ],
-    topics: [
-      {
-        num: "01",
-        title: "أساسيات البرمجة",
-        desc: "تعلّم مبادئ البرمجة بطريقة بصرية وممتعة باستخدام Scratch وبيئات بصرية مناسبة للأعمار الصغيرة، دون الحاجة لخبرة سابقة.",
-        tags: ["Scratch", "المنطق البرمجي", "التسلسل", "الشرط"],
-      },
-      {
-        num: "02",
-        title: "تجميع الروبوت",
-        desc: "اكتشاف كيفية عمل الروبوتات من الداخل — تجميع القطع، توصيل الأسلاك، وفهم دور كل مكوّن في جعل الروبوت يتحرك ويستجيب.",
-        tags: ["المحركات", "الحساسات", "الهيكل", "الدوائر الكهربائية"],
-      },
-      {
-        num: "03",
-        title: "التفكير الإبداعي وحل المشكلات",
-        desc: "تحديات أسبوعية تُشجع الطفل على التفكير خارج الصندوق، العمل الجماعي، وإيجاد حلول إبداعية لمهام واقعية ومسلية.",
-        tags: ["حل المشكلات", "التفكير النقدي", "العمل الجماعي"],
-      },
-      {
-        num: "04",
-        title: "مشاريع عملية",
-        desc: "في نهاية كل وحدة يصمّم الطفل ويُنفّذ مشروعاً كاملاً بنفسه، ويُقدّمه أمام زملائه، لبناء الثقة بالنفس وحب الابتكار.",
-        tags: ["مشروع نهائي", "العرض التقديمي", "الإبداع"],
-      },
-    ],
-    forWhom: [
-      "الأطفال المهتمون بالتكنولوجيا والاكتشاف.",
-      "من يريد تنمية التفكير المنطقي لدى أبنائه منذ الصغر.",
-      "الأطفال الراغبون في تطوير مهارات القرن الـ21.",
-      "من يبحث عن نشاط تعليمي ممتع ومفيد في وقت الفراغ.",
-    ],
-  },
-};
-
 export default function CoursePage() {
   const params = useParams<{ slug: string }>();
   const slug = params.slug ?? "";
@@ -174,11 +34,13 @@ export default function CoursePage() {
     );
   }
 
-  const details = COURSE_DETAILS[course.id];
-  const price = course.price;
   const imgSrc = course.image_url
     ? course.image_url
     : `${import.meta.env.BASE_URL}course-${course.id}.jpg`;
+
+  const badge =
+    course.badge ||
+    (course.category === "kids" ? "للأطفال" : "للكبار");
 
   const defaultStats = course.duration
     ? [
@@ -189,8 +51,14 @@ export default function CoursePage() {
       ]
     : [];
 
-  const stats = details?.stats ?? defaultStats;
-  const badge = details?.badge ?? (course.category === "kids" ? "للأطفال" : "للكبار");
+  const stats =
+    course.stats && course.stats.length > 0 ? course.stats : defaultStats;
+  const topics =
+    course.topics && course.topics.length > 0 ? course.topics : null;
+  const forWhom =
+    course.for_whom && course.for_whom.length > 0 ? course.for_whom : null;
+
+  const price = course.price;
 
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen" dir="rtl">
@@ -264,8 +132,8 @@ export default function CoursePage() {
         </section>
       )}
 
-      {/* What you'll learn — only for courses with detailed curriculum */}
-      {details?.topics && (
+      {/* What you'll learn */}
+      {topics && topics.length > 0 && (
         <section className="py-24 px-4 max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-gray-900">ماذا ستتعلم؟</h2>
@@ -273,7 +141,7 @@ export default function CoursePage() {
           </div>
 
           <div className="space-y-6">
-            {details.topics.map((topic, i) => (
+            {topics.map((topic, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: 30 }}
@@ -315,9 +183,9 @@ export default function CoursePage() {
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl font-bold mb-6">من يستفيد من هذا البرنامج؟</h2>
-            {details?.forWhom ? (
+            {forWhom ? (
               <ul className="space-y-4">
-                {details.forWhom.map((item, i) => (
+                {forWhom.map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="bg-white/30 h-6 w-6 flex items-center justify-center rounded-full text-xs shrink-0 mt-0.5">
                       ✓

@@ -7,7 +7,7 @@ import {
   useUpdateCourse,
   useDeleteCourse,
 } from "@/hooks/use-courses";
-import type { Course, CourseInput } from "@/hooks/use-courses";
+import type { Course, CourseInput, CourseStat, CourseTopic } from "@/hooks/use-courses";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -397,6 +397,10 @@ const EMPTY_COURSE: CourseInput = {
   category: "adults",
   is_featured: false,
   sort_order: 0,
+  badge: "",
+  stats: [],
+  topics: [],
+  for_whom: [],
 };
 
 function CourseFormModal({
@@ -412,7 +416,13 @@ function CourseFormModal({
   isPending: boolean;
   error?: string;
 }) {
-  const [form, setForm] = useState<CourseInput>(initial);
+  const [form, setForm] = useState<CourseInput>({
+    ...EMPTY_COURSE,
+    ...initial,
+    stats: initial.stats ?? [],
+    topics: initial.topics ?? [],
+    for_whom: initial.for_whom ?? [],
+  });
   const isNew = !initial.id;
 
   function field<K extends keyof CourseInput>(key: K, val: CourseInput[K]) {
@@ -432,13 +442,41 @@ function CourseFormModal({
     if (isNew) field("id", generateId(val));
   }
 
+  const stats = (form.stats ?? []) as CourseStat[];
+  const topics = (form.topics ?? []) as CourseTopic[];
+  const forWhom = (form.for_whom ?? []) as string[];
+
+  function updateStat(idx: number, key: keyof CourseStat, val: string) {
+    const next = stats.map((s, i) => (i === idx ? { ...s, [key]: val } : s));
+    field("stats", next);
+  }
+  function addStat() { field("stats", [...stats, { value: "", label: "" }]); }
+  function removeStat(idx: number) { field("stats", stats.filter((_, i) => i !== idx)); }
+
+  function updateTopic(idx: number, key: keyof CourseTopic, val: string | string[]) {
+    const next = topics.map((t, i) => (i === idx ? { ...t, [key]: val } : t));
+    field("topics", next);
+  }
+  function addTopic() { field("topics", [...topics, { num: String(topics.length + 1).padStart(2, "0"), title: "", desc: "", tags: [] }]); }
+  function removeTopic(idx: number) { field("topics", topics.filter((_, i) => i !== idx)); }
+
+  function updateForWhom(idx: number, val: string) {
+    const next = forWhom.map((fw, i) => (i === idx ? val : fw));
+    field("for_whom", next);
+  }
+  function addForWhom() { field("for_whom", [...forWhom, ""]); }
+  function removeForWhom(idx: number) { field("for_whom", forWhom.filter((_, i) => i !== idx)); }
+
+  const sectionClass = "border border-gray-100 rounded-xl p-4 space-y-3";
+  const sectionTitle = "text-sm font-bold text-gray-700 mb-2";
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       dir="rtl"
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
           <h2 className="font-bold text-gray-900">
             {isNew ? "إضافة دورة جديدة" : "تعديل الدورة"}
           </h2>
@@ -454,124 +492,155 @@ function CourseFormModal({
             e.preventDefault();
             onSubmit(form);
           }}
-          className="px-6 py-4 space-y-4"
+          className="px-6 py-4 space-y-5"
         >
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                اسم الدورة *
-              </label>
-              <Input
-                required
-                value={form.title}
-                onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder="مثال: اللغة الفرنسية"
-              />
-            </div>
-            {isNew && (
+          {/* ── Basic Info ── */}
+          <div className={sectionClass}>
+            <p className={sectionTitle}>المعلومات الأساسية</p>
+            <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  المعرف (رابط الدورة) *
-                </label>
+                <label className="block text-xs font-medium text-gray-600 mb-1">اسم الدورة *</label>
                 <Input
                   required
-                  value={form.id}
-                  onChange={(e) => field("id", e.target.value.toLowerCase().replace(/\s+/g, "-"))}
-                  placeholder="مثال: french"
-                  dir="ltr"
+                  value={form.title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  placeholder="مثال: اللغة الفرنسية"
                 />
               </div>
-            )}
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                الوصف
-              </label>
-              <textarea
-                value={form.description}
-                onChange={(e) => field("description", e.target.value)}
-                rows={3}
-                placeholder="وصف مختصر للدورة"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
-              />
+              {isNew && (
+                <div className="col-span-2">
+                  <label className="block text-xs font-medium text-gray-600 mb-1">المعرف (رابط الدورة) *</label>
+                  <Input
+                    required
+                    value={form.id}
+                    onChange={(e) => field("id", e.target.value.toLowerCase().replace(/\s+/g, "-"))}
+                    placeholder="مثال: french"
+                    dir="ltr"
+                  />
+                </div>
+              )}
+              <div className="col-span-2">
+                <label className="block text-xs font-medium text-gray-600 mb-1">الوصف</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => field("description", e.target.value)}
+                  rows={3}
+                  placeholder="وصف مختصر للدورة"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-xs font-medium text-gray-600 mb-1">الشارة (badge)</label>
+                <Input
+                  value={form.badge ?? ""}
+                  onChange={(e) => field("badge", e.target.value)}
+                  placeholder="مثال: شعبة العلوم والتقني رياضي"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">السعر</label>
+                <Input value={form.price} onChange={(e) => field("price", e.target.value)} placeholder="5,000 د.ج / شهرياً" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">المدة</label>
+                <Input value={form.duration} onChange={(e) => field("duration", e.target.value)} placeholder="4 ساعة/أسبوع" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">الرمز (Emoji)</label>
+                <Input value={form.icon} onChange={(e) => field("icon", e.target.value)} placeholder="📚" className="text-xl" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">الفئة</label>
+                <select
+                  value={form.category}
+                  onChange={(e) => field("category", e.target.value as "adults" | "kids")}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-10"
+                >
+                  <option value="adults">الكبار</option>
+                  <option value="kids">الأطفال</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">الترتيب</label>
+                <Input type="number" value={form.sort_order} onChange={(e) => field("sort_order", Number(e.target.value))} min={0} />
+              </div>
+              <div className="flex items-center gap-2 pt-5">
+                <input
+                  type="checkbox"
+                  id="is_featured"
+                  checked={form.is_featured}
+                  onChange={(e) => field("is_featured", e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-[#c0001a]"
+                />
+                <label htmlFor="is_featured" className="text-xs font-medium text-gray-600">الأكثر طلباً (مميزة)</label>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-xs font-medium text-gray-600 mb-1">رابط الصورة (اختياري)</label>
+                <Input value={form.image_url} onChange={(e) => field("image_url", e.target.value)} placeholder="https://..." dir="ltr" />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                السعر
-              </label>
-              <Input
-                value={form.price}
-                onChange={(e) => field("price", e.target.value)}
-                placeholder="5,000 د.ج / شهرياً"
-              />
+          </div>
+
+          {/* ── Stats ── */}
+          <div className={sectionClass}>
+            <div className="flex items-center justify-between mb-2">
+              <p className={sectionTitle}>الإحصائيات (stats)</p>
+              <button type="button" onClick={addStat} className="text-xs text-[#c0001a] font-bold hover:underline">+ إضافة</button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                المدة
-              </label>
-              <Input
-                value={form.duration}
-                onChange={(e) => field("duration", e.target.value)}
-                placeholder="4 ساعة/أسبوع"
-              />
+            {stats.length === 0 && <p className="text-xs text-gray-400 text-center py-2">لا توجد إحصائيات</p>}
+            {stats.map((s, i) => (
+              <div key={i} className="flex gap-2 items-center">
+                <Input value={s.value} onChange={(e) => updateStat(i, "value", e.target.value)} placeholder="القيمة (مثال: +50)" className="w-1/3 text-sm" />
+                <Input value={s.label} onChange={(e) => updateStat(i, "label", e.target.value)} placeholder="التسمية (مثال: مدرب خبير)" className="flex-1 text-sm" />
+                <button type="button" onClick={() => removeStat(i)} className="text-gray-400 hover:text-red-500 text-lg leading-none flex-shrink-0">×</button>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Topics ── */}
+          <div className={sectionClass}>
+            <div className="flex items-center justify-between mb-2">
+              <p className={sectionTitle}>المحاور (topics)</p>
+              <button type="button" onClick={addTopic} className="text-xs text-[#c0001a] font-bold hover:underline">+ إضافة</button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                الرمز (Emoji)
-              </label>
-              <Input
-                value={form.icon}
-                onChange={(e) => field("icon", e.target.value)}
-                placeholder="📚"
-                className="text-xl"
-              />
+            {topics.length === 0 && <p className="text-xs text-gray-400 text-center py-2">لا توجد محاور</p>}
+            {topics.map((t, i) => (
+              <div key={i} className="border border-gray-100 rounded-lg p-3 space-y-2 relative">
+                <button type="button" onClick={() => removeTopic(i)} className="absolute top-2 left-2 text-gray-300 hover:text-red-500 text-lg leading-none">×</button>
+                <div className="flex gap-2">
+                  <Input value={t.num} onChange={(e) => updateTopic(i, "num", e.target.value)} placeholder="الرقم (01)" className="w-16 text-sm" dir="ltr" />
+                  <Input value={t.title} onChange={(e) => updateTopic(i, "title", e.target.value)} placeholder="عنوان المحور" className="flex-1 text-sm" />
+                </div>
+                <textarea
+                  value={t.desc}
+                  onChange={(e) => updateTopic(i, "desc", e.target.value)}
+                  rows={2}
+                  placeholder="وصف المحور"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                />
+                <Input
+                  value={t.tags.join("، ")}
+                  onChange={(e) => updateTopic(i, "tags", e.target.value.split(/[،,]/).map(s => s.trim()).filter(Boolean))}
+                  placeholder="الوسوم مفصولة بفاصلة (مثال: الجبر، التحليل)"
+                  className="text-sm"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* ── For Whom ── */}
+          <div className={sectionClass}>
+            <div className="flex items-center justify-between mb-2">
+              <p className={sectionTitle}>لمن هذه الدورة؟ (for_whom)</p>
+              <button type="button" onClick={addForWhom} className="text-xs text-[#c0001a] font-bold hover:underline">+ إضافة</button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                الفئة
-              </label>
-              <select
-                value={form.category}
-                onChange={(e) => field("category", e.target.value as "adults" | "kids")}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-10"
-              >
-                <option value="adults">الكبار</option>
-                <option value="kids">الأطفال</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                الترتيب
-              </label>
-              <Input
-                type="number"
-                value={form.sort_order}
-                onChange={(e) => field("sort_order", Number(e.target.value))}
-                min={0}
-              />
-            </div>
-            <div className="flex items-center gap-2 mt-4">
-              <input
-                type="checkbox"
-                id="is_featured"
-                checked={form.is_featured}
-                onChange={(e) => field("is_featured", e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-[#c0001a]"
-              />
-              <label htmlFor="is_featured" className="text-sm font-medium text-gray-700">
-                الأكثر طلباً (مميزة)
-              </label>
-            </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                رابط الصورة (اختياري)
-              </label>
-              <Input
-                value={form.image_url}
-                onChange={(e) => field("image_url", e.target.value)}
-                placeholder="https://..."
-                dir="ltr"
-              />
-            </div>
+            {forWhom.length === 0 && <p className="text-xs text-gray-400 text-center py-2">لا توجد عناصر</p>}
+            {forWhom.map((fw, i) => (
+              <div key={i} className="flex gap-2 items-center">
+                <Input value={fw} onChange={(e) => updateForWhom(i, e.target.value)} placeholder="مثال: الطلاب الراغبون في رفع معدلهم" className="flex-1 text-sm" />
+                <button type="button" onClick={() => removeForWhom(i)} className="text-gray-400 hover:text-red-500 text-lg leading-none flex-shrink-0">×</button>
+              </div>
+            ))}
           </div>
 
           {error && (
