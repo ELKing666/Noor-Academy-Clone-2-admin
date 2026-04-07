@@ -608,17 +608,17 @@ function Branches() {
     {
       name: "الفرع الرئيسي",
       address: "Hay Arroudj, Centre des Affaires Erriadh N°02, Chlef",
-      maps: "https://www.google.com/maps/search/Centre+des+Affaires+Erriadh+Chlef",
+      maps: "https://maps.app.goo.gl/sHU7mRKx5rNMk89SA",
     },
     {
       name: "الفرع الثاني",
       address: "Hay Arroudj, Centre des Affaires Erriadh N°02, Chlef",
-      maps: "https://www.google.com/maps/search/Centre+des+Affaires+Erriadh+Chlef",
+      maps: "https://maps.app.goo.gl/PqruSFBzrdkExpy89",
     },
     {
       name: "الفرع الثالث",
       address: "Noor Academy 3, Chlef",
-      maps: "https://www.google.com/maps/search/Noor+Academy+Chlef",
+      maps: "https://maps.app.goo.gl/EP9VnsNjWvQEzT9ZA",
     },
   ];
 
