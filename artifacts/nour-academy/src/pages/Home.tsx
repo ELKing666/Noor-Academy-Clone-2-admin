@@ -755,7 +755,7 @@ function Contact() {
                     {item.icon}
                   </div>
                   <h3 className="font-bold text-xl mb-2 text-gray-800">{item.title}</h3>
-                  <p className="text-muted-foreground whitespace-pre-line" dir={item.dir}>{item.info}</p>
+                  <p className="text-gray-800 font-semibold text-base whitespace-pre-line" dir={item.dir}>{item.info}</p>
                 </motion.div>
               ))}
         </div>
