@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 export interface Course {
   id: string;
@@ -17,26 +18,17 @@ export interface Course {
 
 export type CourseInput = Omit<Course, "created_at" | "updated_at">;
 
-function getBase() {
-  return import.meta.env.BASE_URL.replace(/\/$/, "");
-}
-
-async function fetchCourses(): Promise<Course[]> {
-  const res = await fetch(`${getBase()}/api/courses`);
-  if (!res.ok) throw new Error("fetch failed");
-  return res.json();
-}
-
-async function fetchCourse(id: string): Promise<Course> {
-  const res = await fetch(`${getBase()}/api/courses/${id}`);
-  if (!res.ok) throw new Error("not found");
-  return res.json();
-}
-
 export function useCourses() {
   return useQuery<Course[]>({
     queryKey: ["courses"],
-    queryFn: fetchCourses,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -44,7 +36,15 @@ export function useCourses() {
 export function useCourse(id: string) {
   return useQuery<Course>({
     queryKey: ["courses", id],
-    queryFn: () => fetchCourse(id),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    },
     enabled: !!id,
     staleTime: 2 * 60 * 1000,
   });
@@ -52,21 +52,16 @@ export function useCourse(id: string) {
 
 export function useCreateCourse() {
   const queryClient = useQueryClient();
-  return useMutation<Course, Error, { password: string; course: CourseInput }>({
-    mutationFn: async ({ password, course }) => {
-      const res = await fetch(`${getBase()}/api/admin/courses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-        },
-        body: JSON.stringify(course),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || "فشل الإنشاء");
-      }
-      return res.json();
+  return useMutation<Course, Error, CourseInput>({
+    mutationFn: async (course) => {
+      const now = new Date().toISOString();
+      const { data, error } = await supabase
+        .from("courses")
+        .insert({ ...course, created_at: now, updated_at: now })
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -76,21 +71,16 @@ export function useCreateCourse() {
 
 export function useUpdateCourse() {
   const queryClient = useQueryClient();
-  return useMutation<Course, Error, { password: string; id: string; course: Partial<CourseInput> }>({
-    mutationFn: async ({ password, id, course }) => {
-      const res = await fetch(`${getBase()}/api/admin/courses/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-        },
-        body: JSON.stringify(course),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || "فشل التحديث");
-      }
-      return res.json();
+  return useMutation<Course, Error, { id: string; course: Partial<CourseInput> }>({
+    mutationFn: async ({ id, course }) => {
+      const { data, error } = await supabase
+        .from("courses")
+        .update({ ...course, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -100,16 +90,13 @@ export function useUpdateCourse() {
 
 export function useDeleteCourse() {
   const queryClient = useQueryClient();
-  return useMutation<void, Error, { password: string; id: string }>({
-    mutationFn: async ({ password, id }) => {
-      const res = await fetch(`${getBase()}/api/admin/courses/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${password}` },
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || "فشل الحذف");
-      }
+  return useMutation<void, Error, { id: string }>({
+    mutationFn: async ({ id }) => {
+      const { error } = await supabase
+        .from("courses")
+        .delete()
+        .eq("id", id);
+      if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
