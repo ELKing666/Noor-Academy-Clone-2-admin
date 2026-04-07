@@ -246,7 +246,7 @@ function About() {
     },
     {
       icon: <Award className="w-7 h-7 text-white" />,
-      target: 10,
+      target: 15,
       suffix: "+",
       label: "سنوات خبرة",
       gradient: "from-amber-500 to-orange-600",
