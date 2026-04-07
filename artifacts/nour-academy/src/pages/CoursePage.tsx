@@ -4,6 +4,12 @@ import { useCourse } from "@/hooks/use-courses";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Hardcoded rich content for legacy courses until DB migration is complete
+const LEGACY_BADGES: Record<string, string> = {
+  bac: "شعبة بكالوريا",
+  english: "لغة إنجليزية",
+  robotics: "روبوتيك للأطفال",
+};
+
 const LEGACY_STATS: Record<string, Array<{ value: string; label: string }>> = {
   bac: [
     { value: "📚", label: "شعب علمية وأدبية" },
@@ -146,6 +152,7 @@ export default function CoursePage() {
 
   const badge =
     course.badge ||
+    LEGACY_BADGES[course.id] ||
     (course.category === "kids" ? "للأطفال" : "للكبار");
 
   const defaultStats = course.duration
