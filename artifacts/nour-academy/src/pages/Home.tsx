@@ -129,6 +129,7 @@ function Navbar() {
           <a href="#courses" className="hover:text-amber-400 transition-colors">الدورات</a>
           <a href="#testimonials" className="hover:text-amber-400 transition-colors">آراء الطلاب</a>
           <a href="#faq" className="hover:text-amber-400 transition-colors">الأسئلة الشائعة</a>
+          <a href="#branches" className="hover:text-amber-400 transition-colors">فروعنا</a>
           <a href="#contact" className="hover:text-amber-400 transition-colors">تواصل معنا</a>
           <Button
             asChild
@@ -155,6 +156,7 @@ function Navbar() {
           <a href="#courses" onClick={() => setMobileOpen(false)}>الدورات</a>
           <a href="#testimonials" onClick={() => setMobileOpen(false)}>آراء الطلاب</a>
           <a href="#faq" onClick={() => setMobileOpen(false)}>الأسئلة الشائعة</a>
+          <a href="#branches" onClick={() => setMobileOpen(false)}>فروعنا</a>
           <a href="#contact" onClick={() => setMobileOpen(false)}>تواصل معنا</a>
           <Button
             asChild
@@ -601,6 +603,75 @@ function FAQ() {
   );
 }
 
+function Branches() {
+  const branches = [
+    {
+      name: "الفرع الرئيسي",
+      address: "Hay Arroudj, Centre des Affaires Erriadh N°02, Chlef",
+      maps: "https://www.google.com/maps/search/Centre+des+Affaires+Erriadh+Chlef",
+    },
+    {
+      name: "الفرع الثاني",
+      address: "Hay Arroudj, Centre des Affaires Erriadh N°02, Chlef",
+      maps: "https://www.google.com/maps/search/Centre+des+Affaires+Erriadh+Chlef",
+    },
+    {
+      name: "الفرع الثالث",
+      address: "Noor Academy 3, Chlef",
+      maps: "https://www.google.com/maps/search/Noor+Academy+Chlef",
+    },
+  ];
+
+  return (
+    <section id="branches" className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">فروعنا</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            نور أكاديمي تضم ثلاثة فروع في مدينة شلف، الجزائر، كل فرع ملتزم بتقديم تعليم ذي جودة عالية.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {branches.map((branch, i) => (
+            <motion.div
+              key={i}
+              variants={fadeUpDelay(i * 0.15)}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-7 shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
+                  <MapPin size={22} className="text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800">{branch.name}</h3>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed flex-1">{branch.address}</p>
+              <a
+                href={branch.maps}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-semibold text-sm py-2.5 px-5 rounded-xl transition-all shadow hover:shadow-md"
+              >
+                <MapPin size={16} />
+                عرض على خرائط جوجل
+              </a>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Contact() {
   const { data, isLoadingContent: isLoading } = useSiteContent();
   const contact = data?.contact;
@@ -930,6 +1001,7 @@ export default function Home() {
       </div>
       <Testimonials />
       <FAQ />
+      <Branches />
       <Contact />
       <Footer />
       
