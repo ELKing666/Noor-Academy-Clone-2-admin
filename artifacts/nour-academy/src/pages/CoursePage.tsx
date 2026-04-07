@@ -2,11 +2,13 @@ import { useParams, Link } from "wouter";
 import { motion } from "framer-motion";
 import { useCourse } from "@/hooks/use-courses";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLang } from "@/contexts/LanguageContext";
 
 export default function CoursePage() {
   const params = useParams<{ slug: string }>();
   const slug = params.slug ?? "";
   const { data: course, isLoading, isError } = useCourse(slug);
+  const { t, dir } = useLang();
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   if (isLoading) {
@@ -26,9 +28,9 @@ export default function CoursePage() {
   if (isError || !course) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center gap-4 p-8">
-        <p className="text-2xl font-bold text-gray-700">الدورة غير موجودة</p>
+        <p className="text-2xl font-bold text-gray-700">{t("course.notFound")}</p>
         <Link href="/" className="text-primary underline font-semibold">
-          العودة للرئيسية
+          {t("course.backToHome")}
         </Link>
       </div>
     );
@@ -40,14 +42,22 @@ export default function CoursePage() {
 
   const badge =
     course.badge ||
-    (course.category === "kids" ? "للأطفال" : "للكبار");
+    (course.category === "kids"
+      ? t("course.badgeDefault.kids")
+      : t("course.badgeDefault.adults"));
 
   const defaultStats = course.duration
     ? [
         { value: course.icon, label: course.title },
-        { value: course.duration, label: "المدة الأسبوعية" },
-        { value: course.category === "kids" ? "الأطفال" : "الكبار", label: "الفئة" },
-        { value: course.is_featured ? "الأكثر طلباً" : "دورة متميزة", label: "التصنيف" },
+        { value: course.duration, label: t("course.stat.weeklyDuration") },
+        {
+          value: course.category === "kids" ? t("course.stat.kids") : t("course.stat.adults"),
+          label: t("course.stat.category"),
+        },
+        {
+          value: course.is_featured ? t("course.stat.featured") : t("course.stat.outstanding"),
+          label: t("course.stat.category"),
+        },
       ]
     : [];
 
@@ -61,12 +71,12 @@ export default function CoursePage() {
   const price = course.price;
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen" dir="rtl">
+    <div className="bg-gray-50 text-gray-800 min-h-screen" dir={dir}>
       <Link
         href="/#courses"
         className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-white text-primary font-bold px-4 py-2 rounded-full shadow-lg hover:bg-primary hover:text-white transition-all text-sm"
       >
-        → الرئيسية
+        {t("course.back")}
       </Link>
 
       {/* Hero */}
@@ -136,8 +146,8 @@ export default function CoursePage() {
       {topics && topics.length > 0 && (
         <section className="py-24 px-4 max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900">ماذا ستتعلم؟</h2>
-            <p className="text-gray-500 mt-2">محاور البرنامج التعليمي بالتفصيل</p>
+            <h2 className="text-3xl font-bold text-gray-900">{t("course.topics.title")}</h2>
+            <p className="text-gray-500 mt-2">{t("course.topics.subtitle")}</p>
           </div>
 
           <div className="space-y-6">
@@ -151,19 +161,14 @@ export default function CoursePage() {
                 className="flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100"
               >
                 <div className="md:w-1/3 bg-red-50 p-8 flex items-center gap-4">
-                  <span className="text-5xl font-black text-primary/20 leading-none">
-                    {topic.num}
-                  </span>
+                  <span className="text-5xl font-black text-primary/20 leading-none">{topic.num}</span>
                   <h3 className="text-xl font-bold text-primary">{topic.title}</h3>
                 </div>
                 <div className="md:w-2/3 p-8">
                   <p className="text-gray-600 leading-relaxed mb-5">{topic.desc}</p>
                   <div className="flex flex-wrap gap-2">
                     {topic.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full"
-                      >
+                      <span key={tag} className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
                         {tag}
                       </span>
                     ))}
@@ -182,49 +187,43 @@ export default function CoursePage() {
       >
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold mb-6">من يستفيد من هذا البرنامج؟</h2>
+            <h2 className="text-3xl font-bold mb-6">{t("course.forWhom.title")}</h2>
             {forWhom ? (
               <ul className="space-y-4">
                 {forWhom.map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="bg-white/30 h-6 w-6 flex items-center justify-center rounded-full text-xs shrink-0 mt-0.5">
-                      ✓
-                    </span>
+                    <span className="bg-white/30 h-6 w-6 flex items-center justify-center rounded-full text-xs shrink-0 mt-0.5">✓</span>
                     <span className="leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
             ) : (
               <p className="text-white/80 leading-relaxed">
-                {course.description || "هذا البرنامج مناسب لجميع الراغبين في التعلم وتطوير مهاراتهم."}
+                {course.description || t("course.forWhom.fallback")}
               </p>
             )}
           </div>
 
           <div className="bg-white/10 p-8 rounded-[2rem] border border-white/20">
-            <h3 className="text-2xl font-bold mb-4">التسجيل والأسعار</h3>
+            <h3 className="text-2xl font-bold mb-4">{t("course.pricing.title")}</h3>
             {price ? (
               <>
-                <div className="text-4xl font-bold text-amber-400 mb-2">
-                  {price.split(" / ")[0]}
-                </div>
+                <div className="text-4xl font-bold text-amber-400 mb-2">{price.split(" / ")[0]}</div>
                 {price.includes(" / ") && (
                   <p className="text-white/60 mb-8 text-sm">/ {price.split(" / ")[1]}</p>
                 )}
               </>
             ) : (
-              <p className="text-white/60 mb-8 text-sm">تواصل معنا لمعرفة الأسعار</p>
+              <p className="text-white/60 mb-8 text-sm">{t("course.pricing.contact")}</p>
             )}
             {course.duration && (
-              <p className="text-white/70 text-sm mb-6">
-                المدة: {course.duration}
-              </p>
+              <p className="text-white/70 text-sm mb-6">{t("course.pricing.durationLabel")}{course.duration}</p>
             )}
             <a
               href={`${base}/#registration`}
               className="block w-full bg-amber-400 text-gray-900 text-center py-4 rounded-2xl font-bold text-lg hover:bg-amber-300 transition-all"
             >
-              احجز مقعدك الآن
+              {t("course.pricing.cta")}
             </a>
           </div>
         </div>
@@ -232,7 +231,7 @@ export default function CoursePage() {
 
       {/* Footer */}
       <footer className="py-8 text-center text-gray-400 text-sm bg-white border-t border-gray-100">
-        <p>© 2026 نور أكاديمي. جميع الحقوق محفوظة.</p>
+        <p>{t("course.footer.copyright")}</p>
       </footer>
     </div>
   );
