@@ -41,7 +41,7 @@ import { useCourses } from "@/hooks/use-courses";
 // --- Contact Form Schema ---
 const contactSchema = z.object({
   name: z.string().min(2, "الاسم الكامل مطلوب"),
-  email: z.string().email("البريد الإلكتروني غير صالح"),
+  phone: z.string().min(8, "رقم الهاتف مطلوب"),
   message: z.string().min(10, "الرسالة مطلوبة"),
 });
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -666,7 +666,7 @@ function Contact() {
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: { name: "", email: "", message: "" },
+    defaultValues: { name: "", phone: "", message: "" },
   });
 
   function onSubmit(_values: ContactFormValues) {
@@ -784,14 +784,14 @@ function Contact() {
 
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold text-gray-700">البريد الإلكتروني</FormLabel>
+                      <FormLabel className="font-semibold text-gray-700">رقم الهاتف</FormLabel>
                       <FormControl>
                         <Input
-                          type="email"
-                          placeholder="أدخل بريدك الإلكتروني"
+                          type="tel"
+                          placeholder="0555 XX XX XX"
                           dir="ltr"
                           className="text-right focus-visible:ring-primary focus-visible:border-primary h-11 bg-white"
                           {...field}
