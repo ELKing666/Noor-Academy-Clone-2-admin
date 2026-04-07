@@ -714,7 +714,7 @@ function Contact() {
     {
       icon: <MapPin size={26} className="text-white" />,
       title: "العنوان",
-      info: contact?.address ?? "حي 500 مسكن، شلف، الجزائر",
+      info: contact?.address ?? "Hay Arroudj, Centre des Affaires Erriadh N°02 Chlef DZ، 02000",
       dir: undefined,
       gradient: "from-emerald-500 to-emerald-700",
       glow: "hover:shadow-emerald-400/30",
