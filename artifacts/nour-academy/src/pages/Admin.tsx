@@ -304,14 +304,88 @@ function ContactTab({
   );
 }
 
-type Tab = "pricing" | "faq" | "contact" | "courses";
+type Tab = "messages" | "pricing" | "faq" | "contact" | "courses";
 
 const TABS: { id: Tab; label: string }[] = [
+  { id: "messages", label: "الرسائل" },
   { id: "pricing", label: "الأسعار" },
   { id: "faq", label: "الأسئلة الشائعة" },
   { id: "contact", label: "التواصل" },
   { id: "courses", label: "الدورات" },
 ];
+
+interface ContactMessage {
+  id: number;
+  name: string;
+  phone: string;
+  message: string;
+  created_at: string;
+}
+
+function MessagesTab({ password }: { password: string }) {
+  const [messages, setMessages] = React.useState<ContactMessage[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    const base = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
+    fetch(`${base}/api/admin/messages`, {
+      headers: { Authorization: `Bearer ${password}` },
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error("فشل تحميل الرسائل");
+        return r.json();
+      })
+      .then((data) => setMessages(data as ContactMessage[]))
+      .catch((e) => setError(e.message))
+      .finally(() => setIsLoading(false));
+  }, [password]);
+
+  if (isLoading) {
+    return <p className="text-gray-400 text-center py-8">جارٍ التحميل...</p>;
+  }
+  if (error) {
+    return <p className="text-red-500 text-center py-8">{error}</p>;
+  }
+  if (messages.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-400">
+        <div className="text-5xl mb-3">📭</div>
+        <p className="font-medium">لا توجد رسائل حتى الآن</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-gray-500 mb-2">{messages.length} رسالة</p>
+      {messages.map((msg) => (
+        <Card key={msg.id}>
+          <CardContent className="pt-4 pb-4 space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="font-semibold text-gray-900">{msg.name}</p>
+                <p className="text-sm text-gray-500 dir-ltr" dir="ltr">{msg.phone}</p>
+              </div>
+              <span className="text-xs text-gray-400 flex-shrink-0 mt-1">
+                {new Date(msg.created_at).toLocaleDateString("ar-DZ", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </div>
+            <p className="text-gray-700 text-sm bg-gray-50 rounded-lg px-3 py-2 leading-relaxed">
+              {msg.message}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
 const EMPTY_COURSE: CourseInput = {
   id: "",
@@ -730,7 +804,7 @@ function AdminPanel({ password, onLogout }: { password: string; onLogout: () => 
   const updateMutation = useUpdateSiteContent();
   const { toast } = useToast();
 
-  const [activeTab, setActiveTab] = useState<Tab>("courses");
+  const [activeTab, setActiveTab] = useState<Tab>("messages");
   const [localContent, setLocalContent] = useState<SiteContent | null>(null);
 
   useEffect(() => {
@@ -832,6 +906,9 @@ function AdminPanel({ password, onLogout }: { password: string; onLogout: () => 
 
         {/* Tab Content */}
         <div className="mb-8">
+          {activeTab === "messages" && (
+            <MessagesTab password={password} />
+          )}
           {activeTab === "pricing" && (
             <PricingTab content={localContent} onChange={setLocalContent} />
           )}
@@ -847,7 +924,7 @@ function AdminPanel({ password, onLogout }: { password: string; onLogout: () => 
         </div>
 
         {/* Save Button — only for tabs that use localContent */}
-        {activeTab !== "courses" && (
+        {activeTab !== "courses" && activeTab !== "messages" && (
           <Button
             onClick={handleSave}
             disabled={updateMutation.isPending}

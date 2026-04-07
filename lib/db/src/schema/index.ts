@@ -19,3 +19,4 @@
 
 export * from "./students";
 export * from "./site-content";
+export * from "./contact-messages";

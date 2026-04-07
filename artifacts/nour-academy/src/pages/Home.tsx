@@ -663,15 +663,35 @@ function Contact() {
   const { data, isLoadingContent: isLoading } = useSiteContent();
   const contact = data?.contact;
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: { name: "", phone: "", message: "" },
   });
 
-  function onSubmit(_values: ContactFormValues) {
-    setIsSuccess(true);
-    form.reset();
+  async function onSubmit(values: ContactFormValues) {
+    setIsSubmitting(true);
+    setSubmitError("");
+    try {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${base}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error || "فشل الإرسال");
+      }
+      setIsSuccess(true);
+      form.reset();
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "حدث خطأ، حاول مرة أخرى");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const contactItems = [
@@ -821,11 +841,18 @@ function Contact() {
                   )}
                 />
 
+                {submitError && (
+                  <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg text-center">
+                    {submitError}
+                  </p>
+                )}
+
                 <Button
                   type="submit"
+                  disabled={isSubmitting}
                   className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-base h-12 rounded-xl shadow-md hover:shadow-lg transition-all"
                 >
-                  إرسال الرسالة
+                  {isSubmitting ? "جارٍ الإرسال..." : "إرسال الرسالة"}
                 </Button>
               </form>
             </Form>
