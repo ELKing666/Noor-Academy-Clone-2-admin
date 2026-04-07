@@ -15,7 +15,6 @@ import {
   Mail,
   MapPin,
   MessageCircle,
-  BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,26 +34,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useRegisterStudent } from "@workspace/api-client-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { useCourses } from "@/hooks/use-courses";
 
-// --- Form Schema ---
-const registerSchema = z.object({
+// --- Contact Form Schema ---
+const contactSchema = z.object({
   name: z.string().min(2, "الاسم الكامل مطلوب"),
-  phone: z.string().min(8, "رقم الهاتف مطلوب"),
-  course: z.enum(["bac", "english", "robotics"]),
-  payment_method: z.enum(["cash", "ccp"]),
+  email: z.string().email("البريد الإلكتروني غير صالح"),
+  message: z.string().min(10, "الرسالة مطلوبة"),
 });
-type RegisterFormValues = z.infer<typeof registerSchema>;
+type ContactFormValues = z.infer<typeof contactSchema>;
 
 // --- Animation variants ---
 const fadeUp = {
@@ -144,7 +134,7 @@ function Navbar() {
             asChild
             className="bg-amber-400 text-primary hover:bg-amber-500 font-bold"
           >
-            <a href="#registration">سجّل الآن</a>
+            <a href="#contact">تواصل معنا</a>
           </Button>
         </div>
 
@@ -171,7 +161,7 @@ function Navbar() {
             className="bg-amber-400 text-primary hover:bg-amber-500 font-bold w-full mt-4"
             onClick={() => setMobileOpen(false)}
           >
-            <a href="#registration">سجّل الآن</a>
+            <a href="#contact">تواصل معنا</a>
           </Button>
         </div>
       )}
@@ -237,7 +227,7 @@ function Hero() {
           asChild
           className="bg-amber-400 text-primary hover:bg-amber-500 font-bold text-xl px-10 py-6 rounded-full shadow-lg hover:shadow-xl transition-all"
         >
-          <a href="#registration">سجّل الآن</a>
+          <a href="#contact">تواصل معنا</a>
         </Button>
       </motion.div>
 
@@ -530,7 +520,7 @@ function CoursesGrid() {
 
                       {/* CTA button */}
                       <a
-                        href="#registration"
+                        href="#contact"
                         className={`block w-full text-center py-3 rounded-xl font-bold text-sm transition-all ${
                           course.is_featured
                             ? "bg-primary text-white hover:bg-primary/90 shadow-lg"
@@ -669,194 +659,20 @@ function FAQ() {
   );
 }
 
-function Registration() {
-  const [isSuccess, setIsSuccess] = useState(false);
-  const registerMutation = useRegisterStudent();
-
-  const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      name: "",
-      phone: "",
-      course: "bac",
-      payment_method: "cash",
-    },
-  });
-
-  function onSubmit(values: RegisterFormValues) {
-    registerMutation.mutate(
-      { data: values },
-      {
-        onSuccess: () => {
-          setIsSuccess(true);
-        },
-      }
-    );
-  }
-
-  return (
-    <section id="registration" className="py-20 bg-primary/5">
-      {/* Wave top divider */}
-      <div className="w-full overflow-hidden leading-none -mt-1 mb-8">
-        <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-12" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,30 C360,0 720,60 1080,30 C1260,15 1380,45 1440,30 L1440,0 L0,0 Z" fill="#f8fafc" />
-        </svg>
-      </div>
-
-      <div className="container mx-auto px-4 max-w-xl">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <Card className="shadow-2xl border-none overflow-hidden">
-            {/* Gradient header banner */}
-            <div className="bg-gradient-to-r from-primary to-red-700 px-8 py-8 text-center text-white relative overflow-hidden">
-              <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <BookOpen className="w-8 h-8 text-white" />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-2">نموذج التسجيل</h2>
-                <p className="text-white/80 text-sm">سجّل الآن واحجز مقعدك — سنتواصل معك خلال 24 ساعة</p>
-              </div>
-            </div>
-
-            <CardContent className="pt-8 px-8 pb-8">
-              {isSuccess ? (
-                <div className="text-center py-10">
-                  <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
-                  <h3 className="text-2xl font-bold text-primary mb-4">تم التسجيل بنجاح!</h3>
-                  <p className="text-muted-foreground mb-8">شكراً لك! تم حفظ بياناتك بنجاح. سنتواصل معك قريباً.</p>
-                  <Button 
-                    onClick={() => {
-                      setIsSuccess(false);
-                      form.reset();
-                    }}
-                    variant="outline"
-                    className="font-bold border-primary text-primary hover:bg-primary hover:text-white"
-                  >
-                    تسجيل طالب آخر
-                  </Button>
-                </div>
-              ) : (
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-semibold text-gray-700">الاسم الكامل</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="أدخل اسم الطالب"
-                              {...field}
-                              data-testid="input-name"
-                              className="focus-visible:ring-primary focus-visible:border-primary h-11"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-semibold text-gray-700">رقم الهاتف</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="0555 XX XX XX"
-                              dir="ltr"
-                              className="text-right focus-visible:ring-primary focus-visible:border-primary h-11"
-                              {...field}
-                              data-testid="input-phone"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="course"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-semibold text-gray-700">الدورة المطلوبة</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-course" className="h-11 focus:ring-primary">
-                                <SelectValue placeholder="اختر الدورة" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="bac">تحضير البكالوريا</SelectItem>
-                              <SelectItem value="english">اللغة الإنجليزية</SelectItem>
-                              <SelectItem value="robotics">الروبوتيك للأطفال</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="payment_method"
-                      render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel className="font-semibold text-gray-700">طريقة الدفع</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              className="flex gap-6"
-                            >
-                              <FormItem className="flex items-center space-x-3 space-x-reverse space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="cash" />
-                                </FormControl>
-                                <FormLabel className="font-normal">نقداً</FormLabel>
-                              </FormItem>
-                              <FormItem className="flex items-center space-x-3 space-x-reverse space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="ccp" />
-                                </FormControl>
-                                <FormLabel className="font-normal">CCP</FormLabel>
-                              </FormItem>
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-primary to-red-700 hover:from-primary/90 hover:to-red-700/90 text-white font-bold text-lg h-12 shadow-lg hover:shadow-xl transition-all"
-                      disabled={registerMutation.isPending}
-                    >
-                      {registerMutation.isPending ? "جارٍ الإرسال..." : "إرسال التسجيل"}
-                    </Button>
-                  </form>
-                </Form>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
 function Contact() {
   const { data, isLoadingContent: isLoading } = useSiteContent();
   const contact = data?.contact;
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: { name: "", email: "", message: "" },
+  });
+
+  function onSubmit(_values: ContactFormValues) {
+    setIsSuccess(true);
+    form.reset();
+  }
 
   const contactItems = [
     {
@@ -896,8 +712,8 @@ function Contact() {
         >
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12">تواصل معنا</h2>
         </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
           {isLoading
             ? [...Array(3)].map((_, i) => (
                 <div key={i} className="flex flex-col items-center p-6 rounded-2xl border border-gray-100 shadow-md bg-white">
@@ -923,6 +739,98 @@ function Contact() {
                 </motion.div>
               ))}
         </div>
+
+        {/* Contact Form */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="max-w-lg mx-auto bg-gray-50 rounded-2xl p-8 shadow-md border border-gray-100 text-right"
+        >
+          {isSuccess ? (
+            <div className="text-center py-8">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-primary mb-2">تم إرسال رسالتك!</h3>
+              <p className="text-muted-foreground mb-6">سنتواصل معك في أقرب وقت ممكن.</p>
+              <Button
+                onClick={() => setIsSuccess(false)}
+                variant="outline"
+                className="font-bold border-primary text-primary hover:bg-primary hover:text-white"
+              >
+                إرسال رسالة أخرى
+              </Button>
+            </div>
+          ) : (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold text-gray-700">الاسم الكامل</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="أدخل اسمك الكامل"
+                          {...field}
+                          className="focus-visible:ring-primary focus-visible:border-primary h-11 bg-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold text-gray-700">البريد الإلكتروني</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="أدخل بريدك الإلكتروني"
+                          dir="ltr"
+                          className="text-right focus-visible:ring-primary focus-visible:border-primary h-11 bg-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold text-gray-700">الرسالة</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="أدخل رسالتك"
+                          rows={5}
+                          {...field}
+                          className="focus-visible:ring-primary focus-visible:border-primary bg-white resize-none"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-base h-12 rounded-xl shadow-md hover:shadow-lg transition-all"
+                >
+                  إرسال الرسالة
+                </Button>
+              </form>
+            </Form>
+          )}
+        </motion.div>
       </div>
     </section>
   );
@@ -999,15 +907,6 @@ export default function Home() {
       </div>
       <Testimonials />
       <FAQ />
-      <Registration />
-      {/* Wave divider: Registration → Contact */}
-      <div className="bg-white -mt-1">
-        <div className="w-full overflow-hidden leading-none">
-          <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-10 block" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,30 C360,60 720,0 1080,30 C1260,45 1380,15 1440,30 L1440,60 L0,60 Z" fill="#f9fafb" />
-          </svg>
-        </div>
-      </div>
       <Contact />
       <Footer />
       
