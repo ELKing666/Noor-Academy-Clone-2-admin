@@ -197,31 +197,6 @@ function Hero() {
           بيئة تعليمية حديثة، نخبة من خيرة الأساتذة، ومتابعة بيداغوجية دقيقة لضمان تفوق أبنائكم في مسارهم الدراسي.
         </p>
 
-        {/* Stats strip inside hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 w-full max-w-3xl"
-        >
-          {[
-            { value: 500, suffix: "+", label: "طالب وطالبة" },
-            { value: 95, suffix: "%", label: "نسبة النجاح" },
-            { value: 10, suffix: "+", label: "سنوات خبرة" },
-            { value: 20, suffix: "+", label: "دورة تدريبية" },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-4 text-center"
-            >
-              <div className="text-2xl md:text-3xl font-black text-amber-400">
-                <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-              </div>
-              <div className="text-white/80 text-xs md:text-sm mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
-
         <Button
           size="lg"
           asChild
