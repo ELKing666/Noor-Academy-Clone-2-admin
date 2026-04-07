@@ -74,14 +74,14 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 }
 
 function LangToggle() {
-  const { lang, setLang } = useLang();
+  const { lang, setLang, t } = useLang();
   const langs: { code: Lang; label: string }[] = [
     { code: "ar", label: "عر" },
     { code: "fr", label: "FR" },
     { code: "en", label: "EN" },
   ];
   return (
-    <div className="flex items-center bg-white/10 rounded-full p-0.5 gap-0.5 border border-white/20">
+    <div className="flex items-center bg-white/10 rounded-full p-0.5 gap-0.5 border border-white/20" aria-label={t.langToggleLabel} role="group">
       {langs.map(({ code, label }) => (
         <button
           key={code}
@@ -524,7 +524,7 @@ function Branches() {
   );
 }
 
-function ContactForm({ lang }: { lang: string }) {
+function ContactForm({ lang: _lang }: { lang: string }) {
   const { t } = useLang();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
