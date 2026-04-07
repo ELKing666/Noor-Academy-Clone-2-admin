@@ -304,11 +304,10 @@ function ContactTab({
   );
 }
 
-type Tab = "messages" | "pricing" | "faq" | "contact" | "courses";
+type Tab = "messages" | "faq" | "contact" | "courses";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "messages", label: "الرسائل" },
-  { id: "pricing", label: "الأسعار" },
   { id: "faq", label: "الأسئلة الشائعة" },
   { id: "contact", label: "التواصل" },
   { id: "courses", label: "الدورات" },
@@ -908,9 +907,6 @@ function AdminPanel({ password, onLogout }: { password: string; onLogout: () => 
         <div className="mb-8">
           {activeTab === "messages" && (
             <MessagesTab password={password} />
-          )}
-          {activeTab === "pricing" && (
-            <PricingTab content={localContent} onChange={setLocalContent} />
           )}
           {activeTab === "faq" && (
             <FaqTab content={localContent} onChange={setLocalContent} />
